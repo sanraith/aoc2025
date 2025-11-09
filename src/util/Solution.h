@@ -6,7 +6,7 @@
 namespace aoc::util {
     class Solution {
     public:
-        Solution() = default;
+        explicit Solution(const std::string_view title) : _title(title) {}
         virtual ~Solution() = default;
 
         virtual Result part1(std::string_view input) { return NotImplementedResult; }
@@ -14,12 +14,15 @@ namespace aoc::util {
 
         void init(Context& context) { _context = &context; }
 
+        [[nodiscard]] std::string_view title() const { return _title; }
+
         [[nodiscard]] Context& context() const {
             if (!_context) { throw std::invalid_argument("Solution is not initialized!"); }
             return *_context;
         }
 
     private:
+        const std::string_view _title;
         Context* _context = nullptr;
     };
 }

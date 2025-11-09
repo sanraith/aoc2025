@@ -1,4 +1,4 @@
-#include "SolutionIndex.h"
+#include "index.h"
 #include <functional>
 #include <memory>
 #include "Day01.h"
