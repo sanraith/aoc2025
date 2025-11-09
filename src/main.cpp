@@ -11,8 +11,8 @@ void runDay(const int day) {
 
     const std::string input{"test1234"};
     const std::unique_ptr<Solution> solution = aoc::year2025::solutionMap().at(day)();
-    Context context{input};
-    solution->init(context);
+    Context context{};
+    solution->setContext(context);
 
     std::cout << "\n--- Day " << day << ": " << solution->title() << " ---" << std::endl;
     std::cout << "Part 1: " << solution->part1(input) << std::endl;

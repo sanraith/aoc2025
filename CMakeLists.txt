@@ -5,7 +5,8 @@ set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF) # Ensures strict conformance (no compiler extensions)
 
-add_executable(aoc2025 src/main.cpp
+# Main library
+add_library(aoc2025lib
         src/util/Result.h
         src/util/Solution.h
         src/util/Context.h
@@ -14,7 +15,17 @@ add_executable(aoc2025 src/main.cpp
         src/solutions/index.cpp
         src/solutions/index.h
 )
+target_include_directories(aoc2025lib PUBLIC src)
 
+# Tests
+enable_testing()
+add_subdirectory(tests)
+
+# Main executable
+add_executable(aoc2025 src/main.cpp)
+target_link_libraries(aoc2025 PRIVATE aoc2025lib)
+
+# Compiler-specific settings
 if (MSVC)
     add_compile_options(/permissive-)
 
@@ -29,7 +40,7 @@ if (MSVC)
 
     # Treat warnings as errors
     add_compile_options(/WX)
-else()
+else ()
     # Treat warnings as errors
     add_compile_options(-Werror)
-endif()
+endif ()

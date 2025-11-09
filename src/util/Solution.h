@@ -6,23 +6,20 @@
 namespace aoc::util {
     class Solution {
     public:
-        explicit Solution(const std::string_view title) : _title(title) {}
+        explicit Solution(const std::string_view title) : _title(title), _context(emptyContext()) {}
         virtual ~Solution() = default;
 
         virtual Result part1(std::string_view input) { return NotImplementedResult; }
         virtual Result part2(std::string_view input) { return NotImplementedResult; }
 
-        void init(Context& context) { _context = &context; }
-
+        // ReSharper disable once CppMemberFunctionMayBeConst
+        // ReSharper disable once CppParameterMayBeConstPtrOrRef
+        void setContext(Context& context) { _context = context; }
+        [[nodiscard]] Context& context() const { return _context; }
         [[nodiscard]] std::string_view title() const { return _title; }
-
-        [[nodiscard]] Context& context() const {
-            if (!_context) { throw std::invalid_argument("Solution is not initialized!"); }
-            return *_context;
-        }
 
     private:
         const std::string_view _title;
-        Context* _context = nullptr;
+        Context& _context;
     };
 }
