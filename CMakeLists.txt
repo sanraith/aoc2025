@@ -11,7 +11,6 @@ add_executable(aoc2025 src/main.cpp
         src/util/Context.h
         src/solutions/Day01.cpp
         src/solutions/Day01.h
-        src/v2024/Day01.h
 )
 
 if (MSVC)
