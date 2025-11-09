@@ -9,13 +9,13 @@ namespace aoc::util {
         Solution() = default;
         virtual ~Solution() = default;
 
-        virtual Result part1() { return NotImplementedResult; }
-        virtual Result part2() { return NotImplementedResult; }
+        virtual Result part1(std::string_view input) { return NotImplementedResult; }
+        virtual Result part2(std::string_view input) { return NotImplementedResult; }
 
         void init(Context& context) { _context = &context; }
 
         [[nodiscard]] Context& context() const {
-            if (!_context) { throw std::invalid_argument("Solution is not initialized"); }
+            if (!_context) { throw std::invalid_argument("Solution is not initialized!"); }
             return *_context;
         }
 
