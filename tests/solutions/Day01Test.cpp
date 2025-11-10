@@ -15,7 +15,7 @@ TEST_CASE("Day01 for example input 1", "[example]") {
 
 TEST_CASE("Day01 for puzzle input", "[puzzle]") {
     Day01 day{};
-    const std::string input = getInputReader().readInput(2025, 1);
+    const std::string input = getInputReader().readInputFor(day);
     testPart1(day, input, 14);
     testPart2(day, input, "not implemented");
 }

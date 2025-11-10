@@ -6,6 +6,8 @@
 #include <sstream>
 #include <string>
 
+#include "Solution.h"
+
 namespace aoc::util {
     std::string readFileWhole(const std::string& path) {
         // std::filesystem::path cwd = std::filesystem::current_path();
@@ -25,5 +27,9 @@ namespace aoc::util {
         const std::string path = _basePath + "input/" + std::to_string(year) +
                                  "day" + (day < 10 ? "0" : "") + std::to_string(day) + ".txt";
         return readFileWhole(path);
+    }
+
+    std::string InputReader::readInputFor(const Solution& solution) const {
+        return readInput(solution.year(), solution.day());
     }
 }
