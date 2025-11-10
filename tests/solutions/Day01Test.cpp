@@ -1,19 +1,21 @@
 #include <catch2/catch_test_macros.hpp>
-#include "../../src/solutions/Day01.h"
+#include "testhelper.h"
+#include "solutions/Day01.h"
 using namespace aoc::year2025;
 
-auto exampleInput1 = "example";
-TEST_CASE("Day01 part 1 example 1", "[example]") {
-    REQUIRE(Day01{}.part1(exampleInput1).value == "7");
+auto exampleInput1 = R"(Multi
+line
+example)";
+
+TEST_CASE("Day01 for example input 1", "[example]") {
+    Day01 day{};
+    testPart1(day, exampleInput1, 18);
+    testPart2(day, exampleInput1, "not implemented");
 }
 
-TEST_CASE("Day01 part 2 example 1", "[example]") {
-    REQUIRE(Day01{}.part2(exampleInput1).value == "???");
+TEST_CASE("Day01 for puzzle input", "[puzzle]") {
+    Day01 day{};
+    const std::string input = getInputReader().readInput(2025, 1);
+    testPart1(day, input, 14);
+    testPart2(day, input, "not implemented");
 }
-
-// TEST_CASE("Day01 part 1 puzzle input", "[puzzle]") {
-//     REQUIRE(Day01{}.part1(exampleInput).value == "7");
-// }
-// TEST_CASE("Day01 part 2 puzzle input", "[puzzle]") {
-//     REQUIRE(Day01{}.part2(exampleInput).value == "???");
-// }

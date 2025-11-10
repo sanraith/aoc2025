@@ -14,6 +14,8 @@ add_library(aoc2025lib
         src/solutions/Day01.h
         src/solutions/index.cpp
         src/solutions/index.h
+        src/util/InputReader.cpp
+        src/util/InputReader.h
 )
 target_include_directories(aoc2025lib PUBLIC src)
 

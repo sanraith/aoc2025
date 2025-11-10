@@ -10,5 +10,6 @@ FetchContent_MakeAvailable(Catch2)
 
 add_executable(tests
         solutions/Day01Test.cpp
+        solutions/testhelper.h
 )
 target_link_libraries(tests PRIVATE aoc2025lib Catch2::Catch2WithMain)

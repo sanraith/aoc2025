@@ -2,6 +2,7 @@
 
 namespace aoc::year2025 {
     Result Day01::part1(const std::string_view input) {
+        // std::cout << "[" << input << "]" << std::endl;
         return input.length();
     }
 

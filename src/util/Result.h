@@ -22,8 +22,8 @@ namespace aoc::util {
             NotImplemented
         };
 
-        const std::string value{};
-        const State state{};
+        const std::string value;
+        const State state;
 
         // Forwarding constructor for string-like types
         template<ResultStringType T>
