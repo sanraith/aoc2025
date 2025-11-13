@@ -7,6 +7,8 @@ namespace aoc::util {
 
     class Context {
     public:
+        static Context Empty;
+
         void progress(float progressValue) const {
             progressValue = std::clamp(progressValue, 0.0f, 1.0f);
             if (_progressCallback.has_value()) {
@@ -24,8 +26,5 @@ namespace aoc::util {
         std::optional<ProgressCallback> _progressCallback{};
     };
 
-    inline Context& emptyContext() {
-        static Context emptyContext{};
-        return emptyContext;
-    }
+    inline Context Context::Empty{};
 }

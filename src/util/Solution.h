@@ -7,7 +7,7 @@ namespace aoc::util {
     class Solution {
     public:
         explicit Solution(const int year, const int day, const std::string_view title)
-            : _year(year), _day(day), _title(title), _context(emptyContext()) {}
+            : _year(year), _day(day), _title(title), _context(Context::Empty) {}
 
         virtual ~Solution() = default;
 
