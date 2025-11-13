@@ -1,9 +1,15 @@
 cmake_minimum_required(VERSION 4.0)
 project(aoc2025)
 
+# Setup C++ standards
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF) # Ensures strict conformance (no compiler extensions)
+
+# Setup vcpkg
+include(external/bootstrap_vcpkg.cmake)
+set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake"
+        CACHE STRING "Vcpkg toolchain file")
 
 # Main library
 add_library(aoc2025lib
@@ -17,7 +23,10 @@ add_library(aoc2025lib
         src/util/InputReader.cpp
         src/util/InputReader.h
 )
+
 target_include_directories(aoc2025lib PUBLIC src)
+find_package(fmt CONFIG REQUIRED)
+target_link_libraries(aoc2025lib PRIVATE fmt::fmt)
 
 # Tests
 enable_testing()

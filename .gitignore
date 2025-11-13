@@ -1,5 +1,6 @@
 # Advent of Code input files
 input/
+vcpkg_installed/
 
 # Prerequisites
 *.d
