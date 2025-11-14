@@ -8,8 +8,8 @@ set(CMAKE_CXX_EXTENSIONS OFF) # Ensures strict conformance (no compiler extensio
 
 # Setup vcpkg
 include(external/bootstrap_vcpkg.cmake)
-set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/external/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        CACHE STRING "Vcpkg toolchain file")
+# Make sure to use the included vcpkg toolchain file. The saved CLion build settings use this by default.
+# Otherwise use something like: -DCMAKE_TOOLCHAIN_FILE=..\external\vcpkg\scripts\buildsystems\vcpkg.cmake
 
 # Main library
 add_library(aoc2025lib
@@ -23,7 +23,6 @@ add_library(aoc2025lib
         src/util/InputReader.cpp
         src/util/InputReader.h
 )
-
 target_include_directories(aoc2025lib PUBLIC src)
 find_package(fmt CONFIG REQUIRED)
 target_link_libraries(aoc2025lib PRIVATE fmt::fmt)

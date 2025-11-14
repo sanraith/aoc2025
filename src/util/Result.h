@@ -40,5 +40,5 @@ namespace aoc::util {
         return stream << "Result{\"" << r.value << "\", State: " << static_cast<int>(r.state) << "}";
     }
 
-    static constexpr Result NotImplementedResult{"???", Result::State::NotImplemented};
+    static const Result NotImplementedResult{"???", Result::State::NotImplemented};
 }

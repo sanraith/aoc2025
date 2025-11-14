@@ -2,6 +2,7 @@
   "name": "aoc2025",
   "version": "1.0.0",
   "dependencies": [
-    "fmt"
+    "fmt",
+    "catch2"
   ]
 }

@@ -1,16 +1,7 @@
-Include(FetchContent)
-
-FetchContent_Declare(
-        Catch2
-        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-        GIT_TAG v3.11.0
-)
-
-FetchContent_MakeAvailable(Catch2)
-
 add_executable(tests
         solutions/Day01Test.cpp
         solutions/testhelper.h
         solutions/testhelper.cpp
 )
-target_link_libraries(tests PRIVATE aoc2025lib Catch2::Catch2WithMain)
+find_package(Catch2 CONFIG REQUIRED)
+target_link_libraries(tests PRIVATE Catch2::Catch2WithMain aoc2025lib)
