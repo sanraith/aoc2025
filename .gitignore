@@ -1,9 +1,10 @@
-# Advent of Code input files
+# Advent of Code files
 input/
-vcpkg_installed/
+aoc*.config.json
 
 # Build directories
 cmake-build-*/
+vcpkg_installed/
 
 # Prerequisites
 *.d

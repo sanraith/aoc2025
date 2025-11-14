@@ -11,6 +11,10 @@ include(external/bootstrap_vcpkg.cmake)
 # Make sure to use the included vcpkg toolchain file. The saved CLion build settings use this by default.
 # Otherwise use something like: -DCMAKE_TOOLCHAIN_FILE=..\external\vcpkg\scripts\buildsystems\vcpkg.cmake
 
+find_package(fmt CONFIG REQUIRED)
+find_package(curlcpp CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
+
 # Main library
 add_library(aoc2025lib
         src/util/Result.h
@@ -24,12 +28,21 @@ add_library(aoc2025lib
         src/util/InputReader.h
 )
 target_include_directories(aoc2025lib PUBLIC src)
-find_package(fmt CONFIG REQUIRED)
 target_link_libraries(aoc2025lib PRIVATE fmt::fmt)
 
 # Tests
 enable_testing()
 add_subdirectory(tests)
+
+# Scaffold executable
+add_executable(scaffold src/scaffold.cpp
+        src/scaffold/AocConfig.cpp
+        src/scaffold/AocConfig.h)
+target_link_libraries(scaffold PRIVATE
+        curlcpp::curlcpp
+        fmt::fmt
+        nlohmann_json::nlohmann_json
+)
 
 # Main executable
 add_executable(aoc2025 src/main.cpp)
