@@ -2,6 +2,9 @@
 input/
 vcpkg_installed/
 
+# Build directories
+cmake-build-*/
+
 # Prerequisites
 *.d
 
