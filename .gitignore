@@ -1,5 +1,4 @@
 # Advent of Code files
-input/
 aoc*.config.json
 
 # Build directories

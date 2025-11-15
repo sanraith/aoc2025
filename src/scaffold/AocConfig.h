@@ -1,5 +1,6 @@
 #pragma once
 #include <filesystem>
+#include <optional>
 #include <string>
 
 /** Example config file (aoc2025.config.json)
