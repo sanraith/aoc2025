@@ -3,14 +3,6 @@
 #include <optional>
 #include <string>
 
-/** Example config file (aoc2025.config.json)
-{
-    "eventYear": 2025,
-    "copyResultToClipboard": true,
-    "sessionCookie": "your_session_cookie_here"
-}
-*/
-
 namespace aoc ::scaffold {
     class AocConfig {
     public:
@@ -22,10 +14,18 @@ namespace aoc ::scaffold {
 
     private:
         AocConfig(const int year, const std::string&& sessionCookie, const bool copyResultToClipboard) : _year(year),
-            _sessionCookie(std::move(sessionCookie)), _copyResultToClipboard(copyResultToClipboard) {}
+            _sessionCookie(sessionCookie), _copyResultToClipboard(copyResultToClipboard) {}
 
         const int _year;
         const std::string _sessionCookie;
         const bool _copyResultToClipboard;
     };
 }
+
+/** Example config file (aoc2025.config.json)
+{
+    "eventYear": 2025,
+    "copyResultToClipboard": true,
+    "sessionCookie": "your_session_cookie_here"
+}
+*/

@@ -34,19 +34,31 @@ target_link_libraries(aoc2025lib PRIVATE fmt::fmt)
 enable_testing()
 add_subdirectory(tests)
 
-# Scaffold executable
-add_executable(scaffold src/scaffold.cpp
+# Scaffold library
+add_library(scaffoldLib
         src/scaffold/AocConfig.cpp
-        src/scaffold/AocConfig.h)
-target_link_libraries(scaffold PRIVATE
+        src/scaffold/AocConfig.h
+        src/scaffold/AocCachedWebClient.cpp
+        src/scaffold/AocCachedWebClient.h
+)
+target_include_directories(scaffoldLib PUBLIC src/scaffold)
+target_link_libraries(scaffoldLib PRIVATE
         curlcpp::curlcpp
         fmt::fmt
         nlohmann_json::nlohmann_json
 )
 
+# Scaffold executable
+add_executable(scaffold src/scaffold.cpp)
+target_link_libraries(scaffold PRIVATE scaffoldLib)
+target_link_libraries(scaffold PRIVATE
+        fmt::fmt
+)
+
 # Main executable
 add_executable(aoc2025 src/main.cpp)
 target_link_libraries(aoc2025 PRIVATE aoc2025lib)
+target_link_libraries(aoc2025 PRIVATE scaffoldLib)
 
 # Compiler-specific settings
 if (MSVC)
