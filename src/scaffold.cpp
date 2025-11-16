@@ -76,10 +76,10 @@ void load_puzzle_data(const std::filesystem::path& basePath, const AocConfig& co
 
 int main(const int argc, char* argv[]) {
     std::cout << "Current path: " << std::filesystem::current_path() << '\n';
-    const std::filesystem::path basePath{std::filesystem::exists("input") ? "." : ".."};
-    const auto configPath = basePath / "aoc2025.config.json";
-    if (const auto configOpt = AocConfig::loadFromFile(configPath)) {
+    if (const auto configOpt = AocConfig::loadFromDisk()) {
         const auto& config = *configOpt;
+        const auto& basePath = config.basePath();
+
         fmt::print("Year: {}, SessionCookie: \"{}\", CopyResultToClipboard: {}.\n",
                    config.year(),
                    config.sessionCookie().substr(0, 3) + "...",

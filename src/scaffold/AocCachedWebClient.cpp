@@ -46,7 +46,7 @@ namespace aoc::scaffold {
         }
     }
 
-    std::string AocCachedWebClient::readFileWhole(const fs::path& path) const {
+    static std::string readFileWhole(const fs::path& path) {
         const std::ifstream in(path, std::ios::in | std::ios::binary);
         if (!in) {
             throw std::runtime_error("Failed to open file: " + path.string());
@@ -77,6 +77,10 @@ namespace aoc::scaffold {
             std::cerr << "Error reading puzzle input for " << year << " day " << day << ": " << ex.what() << '\n';
             return std::nullopt;
         }
+    }
+
+    std::optional<std::string> AocCachedWebClient::loadPuzzleInput(const util::Solution& solution) const {
+        return loadPuzzleInput(solution.year(), solution.day());
     }
 
     std::optional<std::string> AocCachedWebClient::loadPuzzlePage(int year, int day) const {

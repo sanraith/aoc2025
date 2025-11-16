@@ -22,14 +22,15 @@ namespace aoc::scaffold {
         file << configJson.dump(4);
     }
 
-    std::optional<AocConfig> AocConfig::loadFromFile(const std::filesystem::path& configPath) {
+    std::optional<AocConfig> AocConfig::loadFromPath(const std::filesystem::path& basePath) {
+        const auto configPath = basePath / "aoc2025.config.json";
         if (!std::filesystem::exists(configPath)) {
             std::cerr << "Config file does not exist at path: "s +
-                    (std::filesystem::current_path() / configPath).string() << std::endl;
+                (std::filesystem::current_path() / configPath).string() << std::endl;
             createEmptyConfigFile(configPath);
             std::cerr <<
-                    "An empty config file has been created at the specified path. Please fill it out and rerun the program."
-                    << std::endl;
+                "An empty config file has been created at the specified path. Please fill it out and rerun the program."
+                << std::endl;
             return std::nullopt;
         }
 
@@ -45,10 +46,27 @@ namespace aoc::scaffold {
             const std::string sessionCookie = configJson["sessionCookie"];
             const bool copyResultToClipboard = configJson.value("copyResultToClipboard", false);
 
-            return AocConfig{year, std::move(sessionCookie), copyResultToClipboard};
-        } catch (json::parse_error& e) {
+            return AocConfig{configPath, year, sessionCookie, copyResultToClipboard};
+        }
+        catch (json::parse_error& e) {
             std::cerr << "Failed to parse config file: "s + e.what() << std::endl;
             return std::nullopt;
         }
+    }
+
+    std::optional<std::filesystem::path>
+    AocConfig::findBasePath(const std::optional<std::filesystem::path>& startOpt) {
+        auto path = std::filesystem::absolute(startOpt ? *startOpt : std::filesystem::current_path());
+        bool found{};
+        while (!((found = std::filesystem::exists(path / CONFIG_FILE_NAME))) && path.has_parent_path()) {
+            path = path.parent_path();
+        }
+
+        return found ? std::optional{path} : std::nullopt;
+    }
+
+    std::optional<AocConfig> AocConfig::loadFromDisk() {
+        const auto basePathOpt = findBasePath();
+        return basePathOpt ? loadFromPath(*basePathOpt) : std::nullopt;
     }
 }
