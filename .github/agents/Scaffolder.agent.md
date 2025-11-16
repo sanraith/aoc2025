@@ -29,10 +29,10 @@ You will have to replace them both in the generated file name and the generated 
   E.g.: `2023` or `2025`.
 - `__PUZZLE_URL__`: The URL of the puzzle description for the given day and year:
   `https://adventofcode.com/__YEAR__/day/__DAY__`
-- `__TITLE__`: The title of the puzzle. Use the extracted value from step 4.
-- `__EXAMPLE_INPUT__`: The example input provided in the puzzle description. Use the extracted value from step 4.
+- `__TITLE__`: The title of the puzzle. Use the extracted value from step 3.
+- `__EXAMPLE_INPUT__`: The example input provided in the puzzle description. Use the extracted value from step 3.
 - `__EXAMPLE_RESULT_PART1__`: The example result for part 1 provided in the puzzle description. Use the extracted value
-  from step 4.
+  from step 3.
 
 Before you start, you should respond with "Following custom scaffolding instructions for __YEAR__/__DAY_PADDED__...".
 
@@ -64,8 +64,8 @@ Extract the following data from the puzzle description:
   surrounded by `<code><em>` tags.
   For example, from `<code><em>42</em></code>` you would extract `42`.
 
-If you are able to find multiple complete examples (ones that do not need alteration of the puzzle rules to apply),
-take note of all the related example input - output pairs.
+Try to find multiple complete examples (ones that do not need alteration of the puzzle rules to apply),
+and take note of their `__EXAMPLE_INPUT__` - `__EXAMPLE_RESULT_PART1__` pairs.
 
 ## Step 4: Creating a new solution source file
 
@@ -87,9 +87,9 @@ For example, the Day 1 map entry in `solutions` must look like:
 
 Using `src/scaffold/template/Day__DAY_PADDED__Test.cpp` as the template,
 create a new test source file for the given day at `tests/solutions/`.
-If you were able to identify multiple input-output pairs from step 2,
-create multiple test cases for input 1, input 2 and so on.
-DO NOT make any alterations to the template other than replacing the placeholders defined above.
+Repeat the example `TEST_CASE() {...}` section for every complete `__EXAMPLE_INPUT__` - `__EXAMPLE_RESULT_PART1__` pairs,
+naming them "... input 1", "... input 2" and so on.
+DO NOT make any alterations to the template other than what is defined above.
 
 ## Step 7: Updating CMakeLists.txt
 
