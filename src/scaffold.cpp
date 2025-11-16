@@ -96,6 +96,7 @@ int main(const int argc, char* argv[]) {
                 std::chrono::day{static_cast<unsigned>(*day)}
             };
             if (targetYmd <= todayYmd) {
+                std::cout << "Loading puzzle data for " << *year << "-12-" << *day << "...\n";
                 load_puzzle_data(config, *year, *day);
             }
             else {

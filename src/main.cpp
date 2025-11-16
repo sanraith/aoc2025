@@ -11,7 +11,7 @@ void runDay(const int year, const int day) {
     }
 
     const std::unique_ptr<Solution> solution = aoc::solutionMap().at({year, day})();
-    const SolutionRunner runner{*AocConfig::loadFromDisk()};
+    const SolutionRunner runner{*AocConfig::loadFromDisk()}; // TODO extract
     runner.runParts(solution);
 }
 
@@ -25,7 +25,7 @@ void runAllDays() {
 
 void runLastDay() {
     const auto [lastYear, lastDay]{aoc::solutionMap().rbegin()->first};
-    std::cout << "Running last day..." << lastDay << std::endl;
+    std::cout << "Running last day..." << std::endl;
     runDay(lastYear, lastDay);
 }
 
@@ -55,11 +55,11 @@ void parseArgs(const int argc, char* argv[]) {
         }
         else if (arg == "-l" || arg == "--last") {
             runLastDay();
-            exit(0);
+            break;
         }
         else if (arg == "-a" || arg == "--all") {
             runAllDays();
-            exit(0);
+            break;
         }
         else if (arg == "--help" || arg == "-h") {
             std::cout << "Usage: aoc2025 [options]\n"
@@ -69,20 +69,20 @@ void parseArgs(const int argc, char* argv[]) {
                 << "  --day, -d <n>    Select day n to run\n"
                 << "  --last, -l       Select the last available day\n"
                 << "  --all, -a        Run all available days\n";
-
-            exit(0);
+            break;
         }
     }
 
     if (year.has_value() && day.has_value()) {
         runDay(*year, *day);
-        exit(0);
     }
-
-    if (argc == 1) {
+    else if (argc == 1) {
         // no user args provided
         runAllDays();
     }
+
+    std::cout << std::endl;
+    exit(0);
 }
 
 int main(const int argc, char* argv[]) {
