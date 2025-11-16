@@ -4,7 +4,7 @@
 #include <fmt/core.h>
 #include <chrono>
 
-#include "util/AocCachedWebClient.h"
+#include "util/CachedAocDataLoader.h"
 #include "util/AocConfig.h"
 using namespace aoc::util;
 
@@ -55,9 +55,8 @@ ScaffoldArgs parseArgs(const int argc, char* argv[]) {
     return args;
 }
 
-void load_puzzle_data(const std::filesystem::path& basePath, const AocConfig& config,
-                      const int year, const int day) {
-    const auto webLoader = AocCachedWebClient(config, basePath);
+void load_puzzle_data(const AocConfig& config, const int year, const int day) {
+    const auto webLoader = CachedAocDataLoader(config);
     const auto input = webLoader.loadPuzzleInput(year, day);
     const auto puzzlePage = webLoader.loadPuzzlePage(year, day);
     if (input) {
@@ -97,7 +96,7 @@ int main(const int argc, char* argv[]) {
                 std::chrono::day{static_cast<unsigned>(*day)}
             };
             if (targetYmd <= todayYmd) {
-                load_puzzle_data(basePath, config, *year, *day);
+                load_puzzle_data(config, *year, *day);
             }
             else {
                 std::cerr << "Error: Specified date " << *year << "-12-" << *day

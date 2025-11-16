@@ -7,21 +7,23 @@
 #include "util/Solution.h"
 
 namespace aoc::util {
-    class AocCachedWebClient {
+    class CachedAocDataLoader {
     public:
-        explicit AocCachedWebClient(const AocConfig& config, const std::filesystem::path& basePath) // NOLINT(*-pass-by-value)
+        explicit CachedAocDataLoader(const AocConfig& config) // NOLINT(*-pass-by-value)
             : _config(config),
-              _basePath(basePath),
-              _cachePath(basePath / ".cache"),
-              _inputPath(basePath / "input") {}
+              _cachePath(config.basePath() / ".cache"),
+              _inputPath(config.basePath() / "input") {}
 
         [[nodiscard]] std::optional<std::string> loadPuzzlePage(int year, int day) const;
         [[nodiscard]] std::optional<std::string> loadPuzzleInput(int year, int day) const;
-        [[nodiscard]] std::optional<std::string> loadPuzzleInput(const util::Solution& solution) const;
+
+        template<DerivedFromSolution T>
+        [[nodiscard]] std::optional<std::string> loadPuzzleInput(const T& solution) const {
+            return loadPuzzleInput(solution.year(), solution.day());
+        }
 
     private:
         const AocConfig _config;
-        const std::filesystem::path _basePath;
         const std::filesystem::path _cachePath;
         const std::filesystem::path _inputPath;
     };

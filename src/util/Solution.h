@@ -28,4 +28,7 @@ namespace aoc::util {
         const std::string_view _title;
         Context& _context;
     };
+
+    template<typename T>
+    concept DerivedFromSolution = std::is_base_of_v<Solution, T>;
 }

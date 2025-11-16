@@ -26,7 +26,7 @@ TEST_CASE (
 )
  {
     Day__DAY_PADDED__ day{};
-    const std::string input = getInputReader().readInputFor(day);
+    const std::string input = loadPuzzleInput(day);
     testPart1(day, input, "?");
     testPart2(day, input, "not_implemented");
 }

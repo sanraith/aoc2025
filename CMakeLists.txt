@@ -24,10 +24,8 @@ add_library(aoc2025lib
         src/solutions/Day01.h
         src/solutions/index.cpp
         src/solutions/index.h
-        src/util/InputReader.cpp
-        src/util/InputReader.h
-        src/util/AocCachedWebClient.cpp
-        src/util/AocCachedWebClient.h
+        src/util/CachedAocDataLoader.cpp
+        src/util/CachedAocDataLoader.h
         src/util/AocConfig.cpp
         src/util/AocConfig.h
         src/util/SolutionRunner.cpp

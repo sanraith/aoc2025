@@ -3,7 +3,6 @@
 #include <array>
 #include <future>
 #include <fmt/format.h>
-#include "InputReader.h"
 
 namespace aoc::util {
     struct DurationScale {
@@ -98,9 +97,12 @@ namespace aoc::util {
     }
 
     void SolutionRunner::runParts(const std::unique_ptr<Solution>& solution) const {
-        const auto input = _inputReader.readInputFor(*solution);
         fmt::println("\n--- Day {}: {} ---", solution->day(), solution->title());
-        runPart(solution, input, 1);
-        runPart(solution, input, 2);
+        if (const auto inputOpt = _inputReader.loadPuzzleInput(*solution)) {
+            const auto input = *inputOpt;
+            runPart(solution, input, 1);
+            runPart(solution, input, 2);
+        }
+        else { fmt::println("Unable to load puzzle input!"); }
     }
 }

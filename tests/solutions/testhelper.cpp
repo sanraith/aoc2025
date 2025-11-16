@@ -1,6 +1,5 @@
 #include "testhelper.h"
 #include <catch2/catch_test_macros.hpp>
-#include "util/InputReader.h"
 #include "util/Solution.h"
 using namespace aoc::util;
 

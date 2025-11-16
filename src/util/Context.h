@@ -12,8 +12,8 @@ namespace aoc::util {
         explicit Context(ProgressCallback progressCallback) : _progressCallback(std::move(progressCallback)) {}
 
         void progress(float progressValue) const {
-            progressValue = std::clamp(progressValue, 0.0f, 1.0f);
             if (_progressCallback.has_value()) {
+                progressValue = std::clamp(progressValue, 0.0f, 1.0f);
                 _progressCallback.value()(progressValue);
             }
         }

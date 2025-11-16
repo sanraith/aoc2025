@@ -1,4 +1,4 @@
-#include "AocCachedWebClient.h"
+#include "CachedAocDataLoader.h"
 
 #include <fstream>
 #include <sstream>
@@ -38,10 +38,9 @@ namespace aoc::util {
             easy.perform();
         }
         catch (curl::curl_easy_exception& error) {
-            // If you want to print the last error.
+            // Print the last error.
             std::cerr << error.what() << std::endl;
-
-            // If you want to print the entire error stack you can do
+            // Print the entire error stack.
             curl::curl_easy_exception::print_traceback();
         }
     }
@@ -57,7 +56,7 @@ namespace aoc::util {
         return ss.str();
     }
 
-    std::optional<std::string> AocCachedWebClient::loadPuzzleInput(const int year, const int day) const {
+    std::optional<std::string> CachedAocDataLoader::loadPuzzleInput(const int year, const int day) const {
         const auto cachedInputFilePath = _cachePath / fmt::format("{}day{:02}_input.txt", year, day);
         const auto inputFilePath = _inputPath / fmt::format("{}day{:02}.txt", year, day);
 
@@ -79,11 +78,7 @@ namespace aoc::util {
         }
     }
 
-    std::optional<std::string> AocCachedWebClient::loadPuzzleInput(const util::Solution& solution) const {
-        return loadPuzzleInput(solution.year(), solution.day());
-    }
-
-    std::optional<std::string> AocCachedWebClient::loadPuzzlePage(int year, int day) const {
+    std::optional<std::string> CachedAocDataLoader::loadPuzzlePage(int year, int day) const {
         const auto cachedPuzzleFilePath = _cachePath / fmt::format("{}day{:02}_puzzle.txt", year, day);
         try {
             if (!fs::exists(cachedPuzzleFilePath)) {

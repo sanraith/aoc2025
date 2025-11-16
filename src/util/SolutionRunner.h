@@ -1,7 +1,7 @@
 #pragma once
 
+#include "CachedAocDataLoader.h"
 #include "AocConfig.h"
-#include "InputReader.h"
 #include "Solution.h"
 
 namespace aoc::util {
@@ -35,6 +35,6 @@ namespace aoc::util {
 
     private:
         AocConfig _config;
-        InputReader _inputReader{_config};
+        CachedAocDataLoader _inputReader{_config};
     };
 }

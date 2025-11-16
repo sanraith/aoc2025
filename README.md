@@ -44,8 +44,8 @@ This repository does follow the automation guidelines on the
 /r/adventofcode [community wiki](https://www.reddit.com/r/adventofcode/wiki/faqs/automation). Specifically:
 
 - Outbound calls are only triggered manually, by `scaffold.cpp`.
-- All successful web requests are cached locally in `.cache/` by `AocCachedWebClient`
+- All successful web requests are cached locally in `.cache/` by `CachedAocDataLoader`
 - If you suspect your input is corrupted, you can manually request a fresh copy by deleting the corresponding file in
   first from `input/`, then `.cache/` if the problem persists.
-- The User-Agent header in `AocCachedWebClient` is set to me (
+- The User-Agent header in `CachedAocDataLoader` is set to me (
   `https://github.com/sanraith/aoc2025 by sanraith@users.noreply.github.com`) since I maintain this repository.
