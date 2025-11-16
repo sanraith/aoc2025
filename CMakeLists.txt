@@ -42,6 +42,7 @@ add_library(scaffoldLib
         src/scaffold/AocCachedWebClient.h
 )
 target_include_directories(scaffoldLib PUBLIC src/scaffold)
+target_link_libraries(scaffoldLib PRIVATE aoc2025lib)
 target_link_libraries(scaffoldLib PRIVATE
         curlcpp::curlcpp
         fmt::fmt

@@ -18,6 +18,7 @@ namespace aoc ::scaffold {
         [[nodiscard]] std::optional<std::string> loadPuzzlePage(int year, int day) const;
 
     private:
+        std::string readFileWhole(const std::filesystem::path& path) const; // ToDo extract
         const AocConfig _config;
         const std::filesystem::path _basePath;
         const std::filesystem::path _cachePath;

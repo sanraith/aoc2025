@@ -13,7 +13,7 @@
 #include "curlcpp/curl_exception.h"
 namespace fs = std::filesystem;
 
-namespace aoc:: scaffold {
+namespace aoc::scaffold {
     void saveUrlToFile(const std::string_view curlAocUrl,
                        const fs::path& targetFilePath,
                        const std::string_view sessionCookie) {
@@ -46,7 +46,7 @@ namespace aoc:: scaffold {
         }
     }
 
-    std::string readFileWhole(const fs::path& path) {
+    std::string AocCachedWebClient::readFileWhole(const fs::path& path) const {
         const std::ifstream in(path, std::ios::in | std::ios::binary);
         if (!in) {
             throw std::runtime_error("Failed to open file: " + path.string());

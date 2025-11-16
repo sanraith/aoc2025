@@ -2,39 +2,113 @@
 #include <iostream>
 #include <ostream>
 #include <fmt/core.h>
+#include <chrono>
 
 #include "scaffold/AocCachedWebClient.h"
 #include "scaffold/AocConfig.h"
-
-
 using namespace aoc::scaffold;
 
-int main() {
+struct ScaffoldArgs {
+    std::optional<int> year;
+    std::optional<int> day;
+};
+
+ScaffoldArgs parseArgs(const int argc, char* argv[]) {
+    using namespace std::chrono;
+    const auto today = floor<days>(system_clock::now());
+    const year_month_day ymd{today};
+
+    ScaffoldArgs args{
+        .year = static_cast<unsigned>(ymd.month()) == 12 ? static_cast<std::optional<int>>(ymd.year()) : std::nullopt,
+        .day = static_cast<unsigned>(ymd.month()) == 12
+                   ? static_cast<std::optional<int>>(static_cast<unsigned>(ymd.day()))
+                   : std::nullopt
+    };
+
+    for (int i = 1; i < argc; ++i) {
+        if (const std::string arg = argv[i]; arg == "-d" || arg == "--day") {
+            i++;
+            if (i < argc) { args.day = std::stoi(argv[i]); }
+            else {
+                std::cerr << "Error: --day requires an argument." << std::endl;
+                exit(1);
+            }
+        }
+        else if (arg == "-y" || arg == "--year") {
+            i++;
+            if (i < argc) { args.year = std::stoi(argv[i]); }
+            else {
+                std::cerr << "Error: --day requires an argument." << std::endl;
+                exit(1);
+            }
+        }
+        else if (arg == "--help" || arg == "-h") {
+            std::cout << "Usage: scaffold -y <year> -d <day> [options]\n"
+                "Options:\n"
+                "  -d, --day <day>       Specify the day of the puzzle to run.\n"
+                "  -y, --year <year>     Specify the year of the puzzle to run.\n"
+                "  -h, --help            Show this help message.\n";
+            exit(0);
+        }
+    }
+
+    return args;
+}
+
+void load_puzzle_data(const std::filesystem::path& basePath, const AocConfig& config,
+                      const int year, const int day) {
+    const auto webLoader = AocCachedWebClient(config, basePath);
+    const auto input = webLoader.loadPuzzleInput(year, day);
+    const auto puzzlePage = webLoader.loadPuzzlePage(year, day);
+    if (input) {
+        fmt::print("Input loaded, length: {} characters.\n", input->length());
+    }
+    else {
+        fmt::print("Failed to load input.\n");
+    }
+    if (puzzlePage) {
+        fmt::print("Puzzle page loaded, length: {} characters.\n", puzzlePage->length());
+    }
+    else {
+        fmt::print("Failed to load puzzle page.\n");
+    }
+}
+
+int main(const int argc, char* argv[]) {
     std::cout << "Current path: " << std::filesystem::current_path() << '\n';
-    const std::filesystem::path basePath{".."};
+    const std::filesystem::path basePath{std::filesystem::exists("input") ? "." : ".."};
     const auto configPath = basePath / "aoc2025.config.json";
     if (const auto configOpt = AocConfig::loadFromFile(configPath)) {
         const auto& config = *configOpt;
-        fmt::print("Year: {}, SessionCookie: \"{}\", CopyResultToClipboard: {}\n",
+        fmt::print("Year: {}, SessionCookie: \"{}\", CopyResultToClipboard: {}.\n",
                    config.year(),
                    config.sessionCookie().substr(0, 3) + "...",
                    config.copyResultToClipboard() ? "true" : "false"
         );
 
-        const auto webLoader = AocCachedWebClient(config, basePath);
-        const auto input = webLoader.loadPuzzleInput(2024, 1);
-        const auto puzzlePage = webLoader.loadPuzzlePage(2024, 1);
-        if (input) {
-            fmt::print("Input loaded, length: {} characters.\n", input->length());
+        const auto [year, day] = parseArgs(argc, argv);
+
+        if (year.has_value() && day.has_value()) {
+            using namespace std::chrono;
+            const year_month_day todayYmd{floor<days>(system_clock::now())};
+            const year_month_day targetYmd{
+                std::chrono::year{static_cast<int>(*year)},
+                std::chrono::month{12},
+                std::chrono::day{static_cast<unsigned>(*day)}
+            };
+            if (targetYmd <= todayYmd) {
+                load_puzzle_data(basePath, config, *year, *day);
+            }
+            else {
+                std::cerr << "Error: Specified date " << *year << "-12-" << *day
+                    << " is in the future compared to today "
+                    << static_cast<int>(todayYmd.year()) << "-"
+                    << static_cast<unsigned>(todayYmd.month()) << "-"
+                    << static_cast<unsigned>(todayYmd.day()) << ".\n";
+            }
         }
         else {
-            fmt::print("Failed to load input.\n");
-        }
-        if (puzzlePage) {
-            fmt::print("Puzzle page loaded, length: {} characters.\n", puzzlePage->length());
-        }
-        else {
-            fmt::print("Failed to load puzzle page.\n");
+            std::cerr << "Error: Year and Day must be specified if the current month is not December. See --help.\n";
         }
     }
 

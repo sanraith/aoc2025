@@ -3,14 +3,14 @@
 
 #include "solutions/index.h"
 
-void runDay(const int day) {
-    if (!aoc::year2025::solutionMap().contains(day)) {
-        std::cout << "Selected day (" << day << ") is not implemented yet!" << std::endl;
+void runDay(const int year, const int day) {
+    if (!aoc::solutionMap().contains({year, day})) {
+        std::cout << "Selected day (" << year << "-12-" << day << ") is not implemented yet!" << std::endl;
         return;
     }
 
     const std::string input{"test1234"};
-    const std::unique_ptr<Solution> solution = aoc::year2025::solutionMap().at(day)();
+    const std::unique_ptr<Solution> solution = aoc::solutionMap().at({year, day})();
     Context context{};
     solution->setContext(context);
 
@@ -21,28 +21,37 @@ void runDay(const int day) {
 
 void runAllDays() {
     std::cout << "Running all days..." << std::endl;
-    for (const int day : aoc::year2025::solutionMap() | std::views::keys) {
-        runDay(day);
+    for (const auto [year, day] : aoc::solutionMap() | std::views::keys
+    ) {
+        runDay(year, day);
     }
 }
 
 void runLastDay() {
-    const int lastDay{aoc::year2025::solutionMap().rbegin()->first};
+    const auto [lastYear, lastDay]{aoc::solutionMap().rbegin()->first};
     std::cout << "Running last day..." << lastDay << std::endl;
-    runDay(lastDay);
+    runDay(lastYear, lastDay);
 }
 
 void parseArgs(const int argc, char* argv[]) {
+    std::optional<int> year{};
+    std::optional<int> day{};
     for (int i = 1; i < argc; ++i) {
         if (const std::string arg = argv[i]; arg == "-d" || arg == "--day") {
             i++;
             if (i < argc) {
                 const std::string dayStr = argv[i];
-                const int day = std::stoi(dayStr);
-                std::cout << "Selected day: " << day << std::endl;
-                runDay(day);
-                exit(0);
+                day = std::stoi(dayStr);
+                std::cout << "Selected day: " << *day << std::endl;
             }
+            else {
+                std::cerr << "Error: --day requires an argument." << std::endl;
+                exit(1);
+            }
+        }
+        else if (arg == "-y" || arg == "--year") {
+            i++;
+            if (i < argc) { year = std::stoi(argv[i]); }
             else {
                 std::cerr << "Error: --day requires an argument." << std::endl;
                 exit(1);
@@ -60,12 +69,18 @@ void parseArgs(const int argc, char* argv[]) {
             std::cout << "Usage: aoc2025 [options]\n"
                 << "Options:\n"
                 << "  --help, -h       Show this help message\n"
+                << "  --year, -y <n>   Select year n to run\n"
                 << "  --day, -d <n>    Select day n to run\n"
                 << "  --last, -l       Select the last available day\n"
                 << "  --all, -a        Run all available days\n";
 
             exit(0);
         }
+    }
+
+    if (year.has_value() && day.has_value()) {
+        runDay(*year, *day);
+        exit(0);
     }
 
     if (argc == 1) {

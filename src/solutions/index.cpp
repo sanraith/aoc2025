@@ -3,10 +3,10 @@
 #include <memory>
 #include "Day01.h"
 
-namespace aoc::year2025 {
-    const std::map<int, SolutionCreator>& solutionMap() {
-        static const std::map<int, SolutionCreator> solutions{
-            {1, [] { return std::make_unique<Day01>(); }},
+namespace aoc {
+    const std::map<YearMonth, SolutionCreator>& solutionMap() {
+        static const std::map<YearMonth, SolutionCreator> solutions{
+            {{2025, 1}, [] { return std::make_unique<year2025::Day01>(); }},
         };
         return solutions;
     }
