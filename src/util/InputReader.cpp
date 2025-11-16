@@ -3,17 +3,15 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <fmt/format.h>
 
 #include "Solution.h"
 
 namespace aoc::util {
-    std::string readFileWhole(const std::string& path) {
-        // std::filesystem::path cwd = std::filesystem::current_path();
-        // std::cout << "Current directory: " << cwd << '\n';
-
+    static std::string readFileWhole(const std::filesystem::path& path) {
         const std::ifstream in(path, std::ios::in | std::ios::binary);
         if (!in) {
-            throw std::runtime_error("Failed to open file: " + path);
+            throw std::runtime_error("Failed to open file: " + path.string());
         }
         std::ostringstream ss;
         ss << in.rdbuf();
@@ -22,8 +20,7 @@ namespace aoc::util {
     }
 
     std::string InputReader::readInput(const int year, const int day) const {
-        const std::string path = _basePath + "input/" + std::to_string(year) +
-                                 "day" + (day < 10 ? "0" : "") + std::to_string(day) + ".txt";
+        const auto path = _config.basePath() / "input" / fmt::format("{}day{:02}.txt", year, day);
         return readFileWhole(path);
     }
 

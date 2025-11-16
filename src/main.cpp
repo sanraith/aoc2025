@@ -2,6 +2,7 @@
 #include <ranges>
 
 #include "solutions/index.h"
+#include "util/SolutionRunner.h"
 
 void runDay(const int year, const int day) {
     if (!aoc::solutionMap().contains({year, day})) {
@@ -9,14 +10,9 @@ void runDay(const int year, const int day) {
         return;
     }
 
-    const std::string input{"test1234"};
     const std::unique_ptr<Solution> solution = aoc::solutionMap().at({year, day})();
-    Context context{};
-    solution->setContext(context);
-
-    std::cout << "\n--- Day " << day << ": " << solution->title() << " ---" << std::endl;
-    std::cout << "Part 1: " << solution->part1(input) << std::endl;
-    std::cout << "Part 2: " << solution->part2(input) << std::endl;
+    const SolutionRunner runner{*AocConfig::loadFromDisk()};
+    runner.runParts(solution);
 }
 
 void runAllDays() {

@@ -30,6 +30,8 @@ add_library(aoc2025lib
         src/util/AocCachedWebClient.h
         src/util/AocConfig.cpp
         src/util/AocConfig.h
+        src/util/SolutionRunner.cpp
+        src/util/SolutionRunner.h
 )
 target_include_directories(aoc2025lib PUBLIC src)
 target_link_libraries(aoc2025lib PRIVATE

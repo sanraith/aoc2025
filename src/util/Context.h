@@ -8,6 +8,8 @@ namespace aoc::util {
     class Context {
     public:
         static Context Empty;
+        explicit Context() = default;
+        explicit Context(ProgressCallback progressCallback) : _progressCallback(std::move(progressCallback)) {}
 
         void progress(float progressValue) const {
             progressValue = std::clamp(progressValue, 0.0f, 1.0f);

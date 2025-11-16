@@ -23,7 +23,7 @@ namespace aoc::util {
     }
 
     std::optional<AocConfig> AocConfig::loadFromPath(const std::filesystem::path& basePath) {
-        const auto configPath = basePath / "aoc2025.config.json";
+        const auto configPath = basePath / CONFIG_FILE_NAME;
         if (!std::filesystem::exists(configPath)) {
             std::cerr << "Config file does not exist at path: "s +
                 (std::filesystem::current_path() / configPath).string() << std::endl;
@@ -46,7 +46,7 @@ namespace aoc::util {
             const std::string sessionCookie = configJson["sessionCookie"];
             const bool copyResultToClipboard = configJson.value("copyResultToClipboard", false);
 
-            return AocConfig{configPath, year, sessionCookie, copyResultToClipboard};
+            return AocConfig{basePath, year, sessionCookie, copyResultToClipboard};
         }
         catch (json::parse_error& e) {
             std::cerr << "Failed to parse config file: "s + e.what() << std::endl;
