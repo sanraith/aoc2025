@@ -6,7 +6,7 @@
 using json = nlohmann::json;
 using namespace std::string_literals;
 
-namespace aoc::scaffold {
+namespace aoc::util {
     void createEmptyConfigFile(const std::filesystem::path& configPath) {
         json configJson;
         configJson["eventYear"] = 2025;

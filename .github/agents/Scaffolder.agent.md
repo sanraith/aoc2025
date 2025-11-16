@@ -69,7 +69,7 @@ and take note of their `__EXAMPLE_INPUT__` - `__EXAMPLE_RESULT_PART1__` pairs.
 
 ## Step 4: Creating a new solution source file
 
-Using template `src/scaffold/template/Day__DAY_PADDED__.h`,
+Using template `src/templates/Day__DAY_PADDED__.h`,
 create a new source file for the given day at `src/solutions/`.
 DO NOT make any alterations to the template other than replacing the placeholders defined above.
 
@@ -85,7 +85,7 @@ For example, the Day 1 map entry in `solutions` must look like:
 
 ## Step 6: Creating a new test source file
 
-Using `src/scaffold/template/Day__DAY_PADDED__Test.cpp` as the template,
+Using `src/templates/Day__DAY_PADDED__Test.cpp` as the template,
 create a new test source file for the given day at `tests/solutions/`.
 Repeat the example `TEST_CASE() {...}` section for every complete `__EXAMPLE_INPUT__` - `__EXAMPLE_RESULT_PART1__` pairs,
 naming them "... input 1", "... input 2" and so on.

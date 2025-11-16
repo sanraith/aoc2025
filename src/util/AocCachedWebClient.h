@@ -6,7 +6,7 @@
 #include "AocConfig.h"
 #include "util/Solution.h"
 
-namespace aoc ::scaffold {
+namespace aoc::util {
     class AocCachedWebClient {
     public:
         explicit AocCachedWebClient(const AocConfig& config, const std::filesystem::path& basePath) // NOLINT(*-pass-by-value)

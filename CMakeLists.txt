@@ -26,32 +26,25 @@ add_library(aoc2025lib
         src/solutions/index.h
         src/util/InputReader.cpp
         src/util/InputReader.h
+        src/util/AocCachedWebClient.cpp
+        src/util/AocCachedWebClient.h
+        src/util/AocConfig.cpp
+        src/util/AocConfig.h
 )
 target_include_directories(aoc2025lib PUBLIC src)
-target_link_libraries(aoc2025lib PRIVATE fmt::fmt)
-
-# Tests
-enable_testing()
-add_subdirectory(tests)
-
-# Scaffold library
-add_library(scaffoldLib
-        src/scaffold/AocConfig.cpp
-        src/scaffold/AocConfig.h
-        src/scaffold/AocCachedWebClient.cpp
-        src/scaffold/AocCachedWebClient.h
-)
-target_include_directories(scaffoldLib PUBLIC src/scaffold)
-target_link_libraries(scaffoldLib PRIVATE aoc2025lib)
-target_link_libraries(scaffoldLib PRIVATE
+target_link_libraries(aoc2025lib PRIVATE
         curlcpp::curlcpp
         fmt::fmt
         nlohmann_json::nlohmann_json
 )
 
+# Tests
+enable_testing()
+add_subdirectory(tests)
+
 # Scaffold executable
 add_executable(scaffold src/scaffold.cpp)
-target_link_libraries(scaffold PRIVATE scaffoldLib)
+target_link_libraries(scaffold PRIVATE aoc2025lib)
 target_link_libraries(scaffold PRIVATE
         fmt::fmt
 )
@@ -59,7 +52,6 @@ target_link_libraries(scaffold PRIVATE
 # Main executable
 add_executable(aoc2025 src/main.cpp)
 target_link_libraries(aoc2025 PRIVATE aoc2025lib)
-target_link_libraries(aoc2025 PRIVATE scaffoldLib)
 
 # Compiler-specific settings
 if (MSVC)

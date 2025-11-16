@@ -21,6 +21,23 @@ Solutions for Advent of Code 2025 in C++.
   target_link_libraries(aoc2025lib PRIVATE PACKAGE_NAME::PACKAGE_NAME)
   ```
 
+## Scaffolding boilerplate code for a new day
+
+Scaffolding instructions are provided for the copilot agent in `.github/agents/Scaffolder.agent.md`
+to auto-generate empty boilerplate code for each day. To use, ask in agent mode to `scaffold day 1`.  
+While scaffolding, the agent tries to run `scaffold.cpp` to download puzzle description and input,
+and tries to open the current puzzle description in the user's browser.
+To allow this to work without user interaction, whitelist the following commands to auto-approve:
+
+- Opening adventofcode.com:
+  ```regex
+  /^(Start-Process|open) 'https:\/\/adventofcode\.com\/\d+\/day\/\d+'$/
+  ```
+- Running scaffolder in debug mode:
+  ```regex
+  /^\.[\\\/]cmake-build-debug-(win|mac)[\\\/]scaffold(\.exe)?( -y \d+ -d \d+)?$/
+  ```
+
 ## Advent of Code Automation
 
 This repository does follow the automation guidelines on the

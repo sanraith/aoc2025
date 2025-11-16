@@ -4,9 +4,9 @@
 #include <fmt/core.h>
 #include <chrono>
 
-#include "scaffold/AocCachedWebClient.h"
-#include "scaffold/AocConfig.h"
-using namespace aoc::scaffold;
+#include "util/AocCachedWebClient.h"
+#include "util/AocConfig.h"
+using namespace aoc::util;
 
 struct ScaffoldArgs {
     std::optional<int> year;

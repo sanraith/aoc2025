@@ -4,7 +4,7 @@
 #include <string>
 #include <utility>
 
-namespace aoc::scaffold {
+namespace aoc::util {
     class AocConfig {
     public:
         static const std::string_view CONFIG_FILE_NAME;

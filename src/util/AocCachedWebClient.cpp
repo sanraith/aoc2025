@@ -13,7 +13,7 @@
 #include "curlcpp/curl_exception.h"
 namespace fs = std::filesystem;
 
-namespace aoc::scaffold {
+namespace aoc::util {
     void saveUrlToFile(const std::string_view curlAocUrl,
                        const fs::path& targetFilePath,
                        const std::string_view sessionCookie) {
