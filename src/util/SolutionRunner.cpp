@@ -2,6 +2,7 @@
 
 #include <array>
 #include <future>
+#include <thread>
 #include <fmt/format.h>
 
 namespace aoc::util {
