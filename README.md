@@ -12,15 +12,6 @@ Solutions for Advent of Code 2025 in C++.
   - `./external/vcpkg/bootstrap-vcpkg.sh` on macOS/Linux
   - `.\external\vcpkg\bootstrap-vcpkg.bat` on Windows
 
-## Adding packages
-
-- Add package: `./external/vcpkg/vcpkg add port PACKAGE_NAME`
-- Include package in CMakeLists.txt:
-  ```cmake
-  find_package(PACKAGE_NAME CONFIG REQUIRED)
-  target_link_libraries(aoc2025lib PRIVATE PACKAGE_NAME::PACKAGE_NAME)
-  ```
-
 ## Scaffolding boilerplate code for a new day
 
 Scaffolding instructions are provided for the copilot agent in `.github/agents/Scaffolder.agent.md`
@@ -37,6 +28,36 @@ To allow this to work without user interaction, whitelist the following commands
   ```regex
   /^\.[\\\/]cmake-build-debug-(win|mac)[\\\/]scaffold(\.exe)?( -y \d+ -d \d+)?$/
   ```
+
+## Running solutions
+
+- Run a specific day: `aoc2025 -y 2025 -d 1` or `aoc2025 --year 2025 --day 1`
+- Run the last implemented day: `aoc2025 -l` or `aoc2025 --last`
+- Run all implemented days: `aoc2025 -a` or `aoc2025 --all`
+- Show help: `aoc2025 -h` or `aoc2025 --help`
+
+Configuration file:
+
+- The runner automatically looks for `aoc2025.config.json` in the current directory or nearest parent directory.
+- Example config (see `src/util/AocConfig.h` for details):
+
+```json
+{
+  "eventYear": 2025,
+  "copyResultToClipboard": true,
+  "sessionCookie": "your_session_cookie_here"
+}
+```
+
+## Adding packages
+
+- Add package: `./external/vcpkg/vcpkg add port PACKAGE_NAME`
+- Include package in CMakeLists.txt:
+  ```cmake
+  find_package(PACKAGE_NAME CONFIG REQUIRED)
+  target_link_libraries(aoc2025lib PRIVATE PACKAGE_NAME::PACKAGE_NAME)
+  ```
+
 
 ## Advent of Code Automation
 
