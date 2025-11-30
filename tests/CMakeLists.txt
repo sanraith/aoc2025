@@ -1,5 +1,4 @@
 add_executable(tests
-        solutions/Day01Test.cpp
         solutions/testhelper.h
         solutions/testhelper.cpp
 )

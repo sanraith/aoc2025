@@ -24,8 +24,13 @@ void runAllDays() {
 }
 
 void runLastDay() {
-    const auto [lastYear, lastDay]{aoc::solutionMap().rbegin()->first};
     std::cout << "Running last day..." << std::endl;
+    if (aoc::solutionMap().empty()) {
+        std::cout << "No solutions are implemented yet!" << std::endl;
+        return;
+    }
+
+    const auto [lastYear, lastDay]{aoc::solutionMap().rbegin()->first};
     runDay(lastYear, lastDay);
 }
 
