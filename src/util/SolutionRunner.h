@@ -1,5 +1,7 @@
 #pragma once
 
+#include <utility>
+
 #include "CachedAocDataLoader.h"
 #include "AocConfig.h"
 #include "Solution.h"
@@ -30,7 +32,7 @@ namespace aoc::util {
     public:
         static constexpr int PROGRESS_UPDATE_DELAY_MS = 50;
 
-        explicit SolutionRunner(const AocConfig& config) : _config(config) {}
+        explicit SolutionRunner(AocConfig config) : _config(std::move(config)) {}
         void runParts(const std::unique_ptr<Solution>& solution) const;
 
     private:

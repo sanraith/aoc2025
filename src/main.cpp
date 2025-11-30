@@ -81,7 +81,6 @@ void parseArgs(const int argc, char* argv[]) {
         runAllDays();
     }
 
-    std::cout << std::endl;
     exit(0);
 }
 
