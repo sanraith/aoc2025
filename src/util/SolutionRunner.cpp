@@ -14,6 +14,10 @@
 #include <windows.h>
 #endif
 
+#if defined(__APPLE__)
+#include <cstdio>    // for popen/pclose on mac
+#endif
+
 namespace aoc::util {
     struct DurationScale {
         long long scale;
@@ -68,7 +72,7 @@ namespace aoc::util {
             const auto endInner = std::chrono::steady_clock::now();
             const auto totalElapsedNanos =
                 std::chrono::duration_cast<std::chrono::nanoseconds>(endInner - startInner).count();
-            return std::pair(result, totalElapsedNanos);
+            return std::pair{result, totalElapsedNanos};
         });
 
         LineRewriter line{};
@@ -146,6 +150,16 @@ namespace aoc::util {
     }
 #endif
 
+#if defined(__APPLE__)
+    static bool copyToClipboardMac(const std::string& utf8) {
+        FILE* p = popen("pbcopy", "w");
+        if (!p) return false;
+        const size_t written = fwrite(utf8.data(), 1, utf8.size(), p);
+        const int rc = pclose(p);
+        return written == utf8.size() && rc == 0;
+    }
+#endif
+
     void SolutionRunner::runParts(const std::unique_ptr<Solution>& solution) const {
         fmt::println("\n--- Day {}: {} ---", solution->day(), solution->title());
         if (const auto inputOpt = _inputReader.loadPuzzleInput(*solution)) {
@@ -158,6 +172,8 @@ namespace aoc::util {
             if (lastResult.state == Result::State::Success && _config.copyResultToClipboard()) {
 #ifdef _WIN32
                 copyToClipboardWindows(lastResult.value);
+#elif defined(__APPLE__)
+                copyToClipboardMac(lastResult.value);
 #else
                 fmt::println("(Clipboard copy not implemented on this platform)");
 #endif
