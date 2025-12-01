@@ -22,6 +22,7 @@ add_library(aoc2025lib
         src/util/Context.h
         src/solutions/index.cpp
         src/solutions/index.h
+        src/solutions/Day01.h
         src/util/CachedAocDataLoader.cpp
         src/util/CachedAocDataLoader.h
         src/util/AocConfig.cpp
