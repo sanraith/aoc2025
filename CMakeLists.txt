@@ -29,6 +29,8 @@ add_library(aoc2025lib
         src/util/AocConfig.h
         src/util/SolutionRunner.cpp
         src/util/SolutionRunner.h
+        src/util/helpers.h
+        src/util/helpers.cpp
 )
 target_include_directories(aoc2025lib PUBLIC src)
 target_link_libraries(aoc2025lib PRIVATE

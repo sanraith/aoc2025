@@ -1,5 +1,6 @@
 #pragma once
-#include "../util/Solution.h"
+#include "util/Solution.h"
+#include "util/helpers.h"
 using namespace aoc::util;
 
 namespace aoc::year__YEAR__ {
