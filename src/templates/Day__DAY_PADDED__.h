@@ -9,11 +9,11 @@ namespace aoc::year__YEAR__ {
     public:
         Day__DAY_PADDED__() : Solution(__YEAR__, __DAY__, "__TITLE__") {}
 
-        Result part1(std::string_view input) override {
+        Result part1(const std::string_view input) override {
             return NotImplementedResult;
         }
 
-        Result part2(std::string_view input) override {
+        Result part2(const std::string_view input) override {
             return NotImplementedResult;
         }
     };
