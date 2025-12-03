@@ -38,9 +38,9 @@ namespace aoc::year2025 {
     private:
         static std::vector<std::pair<int64_t, int64_t>> parse(const std::string_view input) {
             std::vector<std::pair<int64_t, int64_t>> ranges{};
-            const auto rangesStr = util::split(input, ",");
-            for (const auto& range : rangesStr) {
-                const auto parts = util::split(range, "-");
+            const auto rangeStrings = util::split(input, ",");
+            for (const auto& rangeStr : rangeStrings) {
+                const auto parts = util::split(rangeStr, "-");
                 const int64_t start = std::stoll(parts[0]);
                 const int64_t end = std::stoll(parts[1]);
                 ranges.emplace_back(start, end);
@@ -49,10 +49,12 @@ namespace aoc::year2025 {
         }
 
         static bool hasPattern(const int64_t num) {
-            const auto maxDigits = static_cast<int>(ceil(log10(num)));
-            const auto maxPatternDigits = maxDigits / 2;
-            for (int digits = maxPatternDigits; digits > 0; digits--) {
-                if (maxDigits % digits == 0 && hasPatternOfLength(num, digits)) { return true; }
+            const auto digits = static_cast<int>(ceil(log10(num)));
+            const auto maxPatternDigits = digits / 2;
+            for (int patternDigits = maxPatternDigits; patternDigits > 0; patternDigits--) {
+                if (digits % patternDigits == 0 && hasPatternOfLength(num, patternDigits)) {
+                    return true;
+                }
             }
             return false;
         }
