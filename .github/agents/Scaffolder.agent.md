@@ -18,6 +18,7 @@ YOU MUST NOT run any command-line command unless specified in a step below.
 YOU MUST NOT read any other files than the ones specified in the steps below.
 If you cannot find the exact file specified, you must stop and report an error.
 YOU MUST NOT offer any follow-up steps.
+YOU MUST NOT check for any build errors.
 
 During the scaffolding process, you have to find and replace the following placeholders.
 You will have to replace them both in the generated file name and the generated file content.
