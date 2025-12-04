@@ -12,50 +12,42 @@ namespace aoc::year2025 {
 
         Result part1(const std::string_view input) override {
             auto grid = parse(input);
-            auto& tiles = grid.tiles;
-            int canAccessCount = 0;
-
-            for (int y = 0; y < grid.height; y++) {
-                for (int x = 0; x < grid.width; x++) {
-                    const auto pos = Point{x, y};
-                    if (tiles[pos] != TILE_ROLL) { continue; }
-                    if (countNeighbours(pos, tiles) < 4) { canAccessCount++; }
-                }
+            int accessibleRolls = 0;
+            for (const auto& [pos, tile] : grid.tiles) {
+                if (tile != TILE_ROLL) { continue; }
+                if (countNeighbours(pos, grid.tiles) < 4) { accessibleRolls++; }
             }
 
-            return canAccessCount;
+            return accessibleRolls;
         }
 
         Result part2(const std::string_view input) override {
             auto grid = parse(input);
             auto& tiles = grid.tiles;
-            int canAccessCount = 0;
 
+            int rollsAccessed = 0;
             bool canAccessNewRolls = true;
             while (canAccessNewRolls) {
                 canAccessNewRolls = false;
-                auto tilesNext = tiles;
-                for (int y = 0; y < grid.height; y++) {
-                    for (int x = 0; x < grid.width; x++) {
-                        const auto pos = Point{x, y};
-                        if (tiles[pos] != TILE_ROLL) { continue; }
-                        if (countNeighbours(pos, tiles) < 4) {
-                            canAccessNewRolls = true;
-                            canAccessCount++;
-                            tilesNext[pos] = TILE_EMPTY;
-                        }
+                std::vector<Point> removedPositions{};
+                for (const auto& [pos, tile] : tiles) {
+                    if (tile != TILE_ROLL) { continue; }
+                    if (countNeighbours(pos, tiles) < 4) {
+                        canAccessNewRolls = true;
+                        rollsAccessed++;
+                        removedPositions.push_back(pos);
                     }
                 }
-                tiles = tilesNext;
+                for (const auto pos : removedPositions) { tiles.erase(pos); }
             }
 
-            return canAccessCount;
+            return rollsAccessed;
         }
 
     private:
         using Tile = char;
-        const Tile TILE_ROLL = '@';
-        const Tile TILE_EMPTY = '.';
+        static constexpr Tile TILE_EMPTY = '.';
+        static constexpr Tile TILE_ROLL = '@';
 
         struct Point {
             int x{};
@@ -86,7 +78,7 @@ namespace aoc::year2025 {
             Point{0, 1}, Point{-1, 1}, Point{-1, 0}, Point{-1, -1}
         };
 
-        [[nodiscard]] int countNeighbours(const Point pos, const std::map<Point, Tile>& tiles) const {
+        [[nodiscard]] int countNeighbours(const Point& pos, const std::map<Point, Tile>& tiles) const {
             int neighbourCount = 0;
             for (const auto& dir : _directions) {
                 const auto neighbor = pos + dir;
@@ -113,7 +105,7 @@ namespace aoc::year2025 {
                 const auto& line = lines[y];
                 for (int x = 0; x < line.size(); x++) {
                     const auto tile = line[x];
-                    tiles[{x, y}] = tile;
+                    if (tile == TILE_ROLL) { tiles[{x, y}] = tile; }
                 }
             }
             return Grid{
