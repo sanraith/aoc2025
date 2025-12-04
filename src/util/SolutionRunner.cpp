@@ -29,7 +29,7 @@ namespace aoc::util {
         static constexpr std::array<DurationScale, 5> DurationScales{
             {
                 {60'000'000'000LL, "m", 2},
-                {1'000'000'000LL, "s", 3},
+                {1'000'000'000LL, "s", 2},
                 {1'000'000LL, "ms", 0},
                 {1'000LL, "μs", 0},
                 {1LL, "ns", 0}
@@ -79,7 +79,7 @@ namespace aoc::util {
         while (partFuture.wait_for(std::chrono::seconds(0)) != std::future_status::ready) {
             const auto now = std::chrono::steady_clock::now();
             const auto elapsedNanos = std::chrono::duration_cast<std::chrono::nanoseconds>(now - start).count();
-            const auto elapsedStr = std::format("{:>9}", std::format("({})", timeStr(elapsedNanos)));
+            const auto elapsedStr = std::format("{:>8}", std::format("({})", timeStr(elapsedNanos)));
             const auto progressStr = asyncProgress.load(std::memory_order_relaxed) < 0
                                          ? ""
                                          : std::format("{:5.2f}%", asyncProgress * 100.0f);
@@ -90,7 +90,7 @@ namespace aoc::util {
         }
 
         const auto [result, totalElapsedNanos] = partFuture.get();
-        const auto totalElapsedStr = std::format("{:>9}", std::format("({})", timeStr(totalElapsedNanos)));
+        const auto totalElapsedStr = std::format("{:>8}", std::format("({})", timeStr(totalElapsedNanos)));
 
         if (result.state == Result::State::Success) {
             if (result.value.contains('\n')) {

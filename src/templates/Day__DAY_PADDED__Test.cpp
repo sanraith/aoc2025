@@ -6,12 +6,7 @@ using namespace aoc::year__YEAR__;
 
 /** Tests for __PUZZLE_URL__ */
 
-TEST_CASE (
-"Day__DAY_PADDED__ for example input 1"
-,
-"[example]"
-)
- {
+TEST_CASE ("Day__DAY_PADDED__ for example input 1", "[example]") {
     const auto exampleInput1 = R"(__EXAMPLE_INPUT__)";
 
     Day__DAY_PADDED__ day{};
@@ -19,12 +14,7 @@ TEST_CASE (
     testPart2(day, exampleInput1, "not_implemented");
 }
 
-TEST_CASE (
-"Day__DAY_PADDED__ for puzzle input"
-,
-"[puzzle]"
-)
- {
+TEST_CASE ("Day__DAY_PADDED__ for puzzle input", "[puzzle]") {
     Day__DAY_PADDED__ day{};
     const std::string input = loadPuzzleInput(day);
     // testPart1(day, input, "not_implemented");
