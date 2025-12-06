@@ -14,11 +14,11 @@ namespace aoc::year2025 {
         Result part1(const std::string_view input) override {
             const auto problems = parse(input);
             auto sum = 0ll;
-            for (int opIndex = 0; opIndex < problems.operators.size(); opIndex++) {
+            for (int opIndex = 0; opIndex < static_cast<int>(problems.operators.size()); opIndex++) {
                 const auto& op = problems.operators[opIndex];
-                const auto isMultiply = op == "*";
+                const auto isMultiply = op.op == "*";
                 auto result = isMultiply ? 1ll : 0ll;
-                for (int numIndex = 0;numIndex<problems.numbers.size();numIndex++){
+                for (int numIndex = 0; numIndex < problems.numbers.size(); numIndex++) {
                     const auto num = problems.numbers[numIndex][opIndex];
                     if (isMultiply) {
                         result *= num;
@@ -32,12 +32,49 @@ namespace aoc::year2025 {
             return sum;
         }
 
-        Result part2(const std::string_view input) override {
-            return NotImplementedResult;
+        Result part2(const std::string_view inputView) override {
+            const auto lines = util::getLines(inputView);
+            std::string numOrOpRegex = R"(([\*+]))";
+            std::vector<std::vector<int64_t>> problems{};
+            std::regex re(numOrOpRegex);
+            auto text = lines.back();
+            std::sregex_iterator it(text.begin(), text.end(), re), end;
+            std::vector<Operator> operators;
+            for (; it != end; ++it) {
+                // capture operator string and its position within the line
+                const size_t pos = static_cast<size_t>((*it).position());
+                std::string opStr;
+                if (it->size() > 1) opStr = (*it)[1].str();
+                else opStr = (*it)[0].str();
+                operators.push_back(Operator{opStr, pos});
+            }
+
+            auto sum = 0ll;
+            for (int opIndex = 0; opIndex < operators.size(); opIndex++) {
+                const auto [op, start] = operators[opIndex];
+                const auto isMultiply = (op == "*");
+                auto result = isMultiply ? 1ll : 0ll;
+                const auto endEx = opIndex < operators.size() - 1 ? operators[opIndex + 1].pos - 1 : lines[0].length();
+                for (auto numCol = start; numCol < endEx; numCol++) {
+                    std::string numStr{};
+                    for (auto numLine = 0; numLine < lines.size() - 1; numLine++) {
+                        numStr.push_back(lines[numLine][numCol]);
+                    }
+                    const auto num = std::stoll(numStr);
+                    if (isMultiply) { result *= num; }
+                    else { result += num; }
+                }
+                sum += result;
+            }
+
+            return sum;
         }
 
     private:
-        using Operator = std::string;
+        struct Operator {
+            std::string op;
+            size_t pos = 0;
+        };
 
         struct Problems {
             std::vector<std::vector<int64_t>> numbers{};
@@ -54,7 +91,14 @@ namespace aoc::year2025 {
                 problems.emplace_back(strings_to_ints(numStrings));
             }
 
-            const auto operators = captures_from_first_match(lines[lines.size() - 1], numOrOpRegex);
+
+            const auto opStrings = captures_from_first_match(lines[lines.size() - 1], numOrOpRegex);
+            std::vector<Operator> operators;
+            operators.reserve(opStrings.size());
+            for (size_t i = 0; i < opStrings.size(); ++i) {
+                // fall back to using the index as a position if we don't parse positions elsewhere
+                operators.push_back(Operator{opStrings[i], i});
+            }
 
             return Problems{problems, operators};
         }
