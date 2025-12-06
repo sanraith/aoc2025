@@ -5,6 +5,7 @@
 #include "Day03.h"
 #include "Day04.h"
 #include "Day05.h"
+#include "Day06.h"
 
 namespace aoc {
     const std::map<YearMonth, SolutionCreator>& solutionMap() {
@@ -14,6 +15,7 @@ namespace aoc {
             {{2025, 3}, [] { return std::make_unique<year2025::Day03>(); }},
             {{2025, 4}, [] { return std::make_unique<year2025::Day04>(); }},
             {{2025, 5}, [] { return std::make_unique<year2025::Day05>(); }},
+            {{2025, 6}, [] { return std::make_unique<year2025::Day06>(); }},
         };
         return solutions;
     }
