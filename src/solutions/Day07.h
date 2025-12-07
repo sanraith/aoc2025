@@ -3,12 +3,9 @@
 #include "util/helpers.h"
 #include <queue>
 #include <iostream>
-#include <queue>
 #include <vector>
-#include <stdexcept>
 #include <map>
 #include <string>
-#include <iostream>
 using namespace aoc::util;
 
 namespace aoc::year2025 {
@@ -19,9 +16,6 @@ namespace aoc::year2025 {
 
         Result part1(const std::string_view input) override {
             auto grid = parse(input);
-            const Point down{0, 1};
-            const Point left{-1, 0};
-            const Point right{1, 0};
             std::queue<Point> queue{};
             queue.push(grid.start + down);
 
@@ -34,7 +28,7 @@ namespace aoc::year2025 {
                     continue;
                 }
 
-                if (current.y>currentHeight) {
+                if (current.y > currentHeight) {
                     currentHeight = current.y;
                     // print(grid);
                 }
@@ -54,49 +48,15 @@ namespace aoc::year2025 {
                 }
             }
 
-            print(grid);
+            // print(grid);
 
             return count;
         }
 
         Result part2(const std::string_view input) override {
             auto grid = parse(input);
-            const Point down{0, 1};
-            const Point left{-1, 0};
-            const Point right{1, 0};
-            std::queue<Point> queue{};
-            queue.push(grid.start + down);
-
-            int count = 0;
-            int currentHeight = -1;
-            while (!queue.empty()) {
-                const auto current = queue.front();
-                queue.pop();
-                if (current.y > grid.height) {
-                    count+=1;
-                    continue;
-                }
-
-                if (current.y>currentHeight) {
-                    currentHeight = current.y;
-                    // print(grid);
-                }
-
-                if (grid.tiles.contains(current)) {
-                    // const auto existingTile = grid.tiles[current];
-                    // if (existingTile == TILE_BEAM) {
-                    //     continue;
-                    //
-                    queue.push(current + left);
-                    queue.push(current + right);
-                }
-                else {
-                    grid.tiles[current] = TILE_BEAM;
-                    queue.push(current + down);
-                }
-            }
-
-            print(grid);
+            std::map<Point, int64_t> cache{};
+            const auto count = countPaths(grid.start, grid, cache);
 
             return count;
         }
@@ -126,12 +86,46 @@ namespace aoc::year2025 {
             }
         };
 
+        const Point down{0, 1};
+        const Point left{-1, 0};
+        const Point right{1, 0};
+
         struct Grid {
             int width{};
             int height{};
             Point start{};
             std::map<Point, Tile> tiles{};
         };
+
+        int64_t countPaths(const Point start, Grid& grid, std::map<Point, int64_t>& cache) {
+            if (cache.contains(start)) {
+                return cache[start];
+            }
+
+            std::queue<Point> queue{};
+            queue.push(start);
+            auto count = 0ll;
+            while (!queue.empty()) {
+                const auto current = queue.front();
+                queue.pop();
+                if (current.y > grid.height) {
+                    count += 1;
+                    continue;
+                }
+
+                if (grid.tiles.contains(current) && grid.tiles[current] == TILE_SPLITTER) {
+                    count += countPaths(current + left, grid, cache);
+                    count += countPaths(current + right, grid, cache);
+                }
+                else {
+                    grid.tiles[current] = TILE_BEAM;
+                    queue.push(current + down);
+                }
+            }
+            cache[start] = count;
+
+            return count;
+        }
 
         static void print(Grid& grid) {
             for (int y = 0; y < grid.height; y++) {
