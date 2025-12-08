@@ -8,6 +8,7 @@
 #include "Day06.h"
 #include "Day07.h"
 #include "Day08.h"
+#include "Day09.h"
 
 namespace aoc {
     const std::map<YearMonth, SolutionCreator>& solutionMap() {
@@ -20,6 +21,7 @@ namespace aoc {
             {{2025, 6}, [] { return std::make_unique<year2025::Day06>(); }},
             {{2025, 7}, [] { return std::make_unique<year2025::Day07>(); }},
             {{2025, 8}, [] { return std::make_unique<year2025::Day08>(); }},
+            {{2025, 9}, [] { return std::make_unique<year2025::Day09>(); }},
         };
         return solutions;
     }

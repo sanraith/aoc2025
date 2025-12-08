@@ -6,7 +6,6 @@
 #include <map>
 #include <string>
 #include <ranges>
-#include <iostream>
 #include <vector>
 #include <numeric>
 #include <functional>
@@ -21,146 +20,50 @@ namespace aoc::year2025 {
         void setPart1ConnectCount(const int count) { _part1ConnectCount = count; }
 
         Result part1(const std::string_view input) override {
-            const auto connectCount = _part1ConnectCount < 0 ? 1000 : _part1ConnectCount;
+            const auto connectCount = _part1ConnectCount >= 0 ? _part1ConnectCount : 1000;
             const auto points = parse(input);
-            std::vector<std::pair<double, std::pair<Point, Point>>> distPointPairs{};
-            for (int a = 0; a < points.size(); a++) {
-                for (int b = a + 1; b < points.size(); b++) {
-                    const auto aPoint = points[a];
-                    const auto bPoint = points[b];
-                    distPointPairs.push_back({aPoint.euclideanDistance(bPoint), {aPoint, bPoint}});
-                }
-            }
-            std::ranges::sort(distPointPairs);
+            const auto distPointPairs = sortedPairsByDistance(points);
 
-            using Circuit = std::set<Point>;
-            using SharedCircuit = std::shared_ptr<std::set<Point>>;
             std::map<Point, SharedCircuit> circuitsByPoint{};
             int connected = 0;
-            //for (const auto [dist,pair] : distPointPairs) {
             for (int i = 0; i < connectCount; i++) {
                 context().progress(i, connectCount);
                 const auto& [dist, pair] = distPointPairs[i];
                 const auto& [a,b] = pair;
-
-                if (circuitsByPoint.contains(a) != circuitsByPoint.contains(b)) {
-                    // one is part of a circuit
-                    SharedCircuit circuit;
-                    if (circuitsByPoint.contains(a)) {
-                        circuit = circuitsByPoint[a];
-                        circuit->insert(b);
-                        circuitsByPoint[b] = circuit;
-                    }
-                    else {
-                        circuit = circuitsByPoint[b];
-                        circuit->insert(a);
-                        circuitsByPoint[a] = circuit;
-                    }
-                    connected++;
-                }
-                else if (!circuitsByPoint.contains(a) && !circuitsByPoint.contains(b)) {
-                    // none is part of a circuit
-                    const auto circuit = std::make_shared<Circuit>();
-                    circuit->insert(a);
-                    circuit->insert(b);
-                    circuitsByPoint[a] = circuit;
-                    circuitsByPoint[b] = circuit;
-                    connected++;
-                }
-                else {
-                    // both are part of a circuit
-                    auto sourceCircuit = circuitsByPoint[b];
-                    const auto targetCircuit = circuitsByPoint[a];
-                    if (sourceCircuit == targetCircuit) {
-                        continue; // Do nothing if they are in the same circuit
-                    }
-
-                    // Merge them to the first one otherwise.
-                    for (const auto p : *sourceCircuit) {
-                        targetCircuit->insert(p);
-                        circuitsByPoint[p] = targetCircuit;
-                    }
-                    sourceCircuit.reset();
-                    connected++;
-                }
+                const auto [connectedChg, _] = connect(a, b, circuitsByPoint);
+                connected += connectedChg;
             }
 
-            std::set<SharedCircuit> circuits;
-            for (const auto& val : circuitsByPoint | std::views::values) circuits.insert(val);
-
-            std::vector circuitsVector(circuits.begin(), circuits.end());
-            std::ranges::sort(circuitsVector, std::ranges::greater{},
+            auto circuits = circuitsByPoint
+                            | std::views::values
+                            | std::ranges::to<std::set>()
+                            | std::ranges::to<std::vector>();
+            std::ranges::sort(circuits, std::ranges::greater{},
                               [](const SharedCircuit& sc) { return sc->size(); });
-            return std::transform_reduce(
-                circuitsVector.begin(),
-                circuitsVector.begin() + std::min<std::size_t>(3, circuitsVector.size()),
-                1ll,
-                std::multiplies(),
-                [](SharedCircuit const& it) { return static_cast<int64_t>(it->size()); }
-            );
+            circuits = circuits | std::views::take(3) | std::ranges::to<std::vector>();
+            const auto result = std::accumulate(circuits.begin(), circuits.end(), 1ll,
+                                                [](const int64_t a, const SharedCircuit& x) {
+                                                    return a * static_cast<int64_t>(x->size());
+                                                });
+            return result;
         }
 
         Result part2(const std::string_view input) override {
             const auto points = parse(input);
-            std::vector<std::pair<double, std::pair<Point, Point>>> distPointPairs{};
-            for (int a = 0; a < points.size(); a++) {
-                for (int b = a + 1; b < points.size(); b++) {
-                    const auto aPoint = points[a];
-                    const auto bPoint = points[b];
-                    distPointPairs.push_back({aPoint.euclideanDistance(bPoint), {aPoint, bPoint}});
-                }
-            }
-            std::ranges::sort(distPointPairs);
+            const auto distPointPairs = sortedPairsByDistance(points);
 
-            using Circuit = std::set<Point>;
-            using SharedCircuit = std::shared_ptr<std::set<Point>>;
             std::map<Point, SharedCircuit> circuitsByPoint{};
-            int circuitCount = 0;
+            int circuitCount = static_cast<int>(points.size());
             std::pair<Point, Point> lastPair{};
             for (int i = 0; i < distPointPairs.size(); i++) {
                 context().progress(i, distPointPairs.size());
                 const auto& [dist, pair] = distPointPairs[i];
-                const auto& [a,b] = pair;
-                if (circuitsByPoint.contains(a) != circuitsByPoint.contains(b)) {
-                    // one is part of a circuit
-                    SharedCircuit circuit;
-                    if (circuitsByPoint.contains(a)) {
-                        circuit = circuitsByPoint[a];
-                        circuit->insert(b);
-                        circuitsByPoint[b] = circuit;
-                    }
-                    else {
-                        circuit = circuitsByPoint[b];
-                        circuit->insert(a);
-                        circuitsByPoint[a] = circuit;
-                    }
+                const auto [_, circuitChg] = connect(pair.first, pair.second, circuitsByPoint);
+                circuitCount += circuitChg;
+                if (circuitCount == 1) {
+                    lastPair = pair;
+                    break;
                 }
-                else if (!circuitsByPoint.contains(a) && !circuitsByPoint.contains(b)) {
-                    // none is part of a circuit
-                    const auto circuit = std::make_shared<Circuit>();
-                    circuit->insert(a);
-                    circuit->insert(b);
-                    circuitsByPoint[a] = circuit;
-                    circuitsByPoint[b] = circuit;
-                    circuitCount++;
-                }
-                else {
-                    // both are part of a circuit
-                    auto sourceCircuit = circuitsByPoint[b];
-                    const auto targetCircuit = circuitsByPoint[a];
-                    if (sourceCircuit == targetCircuit) {
-                        continue; // Do nothing if they are in the same circuit
-                    }
-
-                    // Merge them to the first one otherwise.
-                    for (const auto p : *sourceCircuit) {
-                        targetCircuit->insert(p);
-                        circuitsByPoint[p] = targetCircuit;
-                    }
-                    sourceCircuit.reset();
-                    circuitCount--;
-                }
-                if (circuitCount == 1) { lastPair = pair; }
             }
 
             return lastPair.first.x * lastPair.second.x;
@@ -176,7 +79,7 @@ namespace aoc::year2025 {
             CoordInt y{};
             CoordInt z{};
 
-            double euclideanDistance(const Point& other) const {
+            [[nodiscard]] double euclideanDistance(const Point& other) const {
                 return sqrt(pow(x - other.x, 2) + pow(y - other.y, 2) + pow(z - other.z, 2));
             }
 
@@ -199,14 +102,66 @@ namespace aoc::year2025 {
             }
         };
 
-        static std::vector<Point> parse(const std::string_view input) {
-            const auto lines = util::getLines(input);
-            std::vector<Point> points{};
-            for (const auto& line : lines) {
-                const auto parts = util::split(line, ",");
-                points.push_back({std::stoll(parts[0]), std::stoll(parts[1]), std::stoll(parts[2])});
+        using Circuit = std::set<Point>;
+        using SharedCircuit = std::shared_ptr<Circuit>;
+
+        static std::vector<std::pair<double, std::pair<Point, Point>>>
+        sortedPairsByDistance(const std::vector<Point>& points) {
+            std::vector<std::pair<double, std::pair<Point, Point>>> distPointPairs{};
+            distPointPairs.reserve((points.size() * points.size() - 1) / 2);
+            for (int a = 0; a < points.size(); a++) {
+                for (int b = a + 1; b < points.size(); b++) {
+                    const auto aPoint = points[a];
+                    const auto bPoint = points[b];
+                    distPointPairs.push_back({aPoint.euclideanDistance(bPoint), {aPoint, bPoint}});
+                }
             }
-            return points;
+            std::ranges::sort(distPointPairs);
+            return distPointPairs;
+        }
+
+        static std::pair<int, int> connect(const Point& a, const Point& b,
+                                           std::map<Point, SharedCircuit>& circuitsByPoint) {
+            int connectedChg = 0;
+            int circuitsChg = 0;
+            const bool containsA = circuitsByPoint.contains(a);
+            const bool containsB = circuitsByPoint.contains(b);
+            if (!containsA && !containsB || containsA != containsB) {
+                // at most one point is part of a circuit
+                const auto circuit =
+                    containsA ? circuitsByPoint[a] : containsB ? circuitsByPoint[b] : std::make_shared<Circuit>();
+                circuit->insert(a);
+                circuit->insert(b);
+                circuitsByPoint[a] = circuit;
+                circuitsByPoint[b] = circuit;
+                connectedChg++;
+                circuitsChg--;
+            }
+            else {
+                // both points are part of a circuit
+                auto sourceCircuit = circuitsByPoint[b];
+                const auto targetCircuit = circuitsByPoint[a];
+                if (sourceCircuit != targetCircuit) {
+                    // Merge them to the first one otherwise.
+                    for (const auto p : *sourceCircuit) {
+                        targetCircuit->insert(p);
+                        circuitsByPoint[p] = targetCircuit;
+                    }
+                    sourceCircuit.reset();
+                    connectedChg++;
+                    circuitsChg--;
+                }
+            }
+            return {connectedChg, circuitsChg};
+        }
+
+        static std::vector<Point> parse(const std::string_view input) {
+            return util::getLines(input)
+                   | std::views::transform([](const std::string& line) {
+                       const auto parts = util::split(line, ",");
+                       return Point{std::stoll(parts[0]), std::stoll(parts[1]), std::stoll(parts[2])};
+                   })
+                   | std::ranges::to<std::vector>();
         }
     };
 }

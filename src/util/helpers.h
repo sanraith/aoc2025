@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cassert>
+#include <map>
 
 namespace aoc::util {
     /** Splits the given text by line. Removes the last empty line if any. */
@@ -25,5 +26,13 @@ namespace aoc::util {
         T wrapped = num % range;
         if (wrapped < 0) wrapped += range;
         return wrapped;
+    }
+
+    template<typename K, typename V>
+    constexpr std::optional<V> tryGetValue(const K& key, const std::map<K, V>& map) {
+        if (const auto it = map.find(key); it != map.end()) {
+            return it->second;
+        }
+        return std::nullopt;
     }
 }

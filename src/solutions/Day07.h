@@ -98,8 +98,8 @@ namespace aoc::year2025 {
         };
 
         int64_t countPaths(const Point start, Grid& grid, std::map<Point, int64_t>& cache) {
-            if (cache.contains(start)) {
-                return cache[start];
+            if (const auto countOpt = util::tryGetValue(start, cache)) {
+                return *countOpt;
             }
 
             std::queue<Point> queue{};
