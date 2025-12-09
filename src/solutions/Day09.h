@@ -8,7 +8,6 @@
 #include <ranges>
 #include <vector>
 #include <numeric>
-#include <functional>
 #include <queue>
 using namespace aoc::util;
 
@@ -30,104 +29,48 @@ namespace aoc::year2025 {
         }
 
         Result part2(const std::string_view input) override {
-            auto pointsInput = parse(input);
-            pointsInput.push_back(pointsInput[0]);
-            const auto points = pointsInput;
-
-            const auto lines = points
+            const auto points = parse(input);
+            // make it continuous by re-adding the first point at the end
+            auto pointsContinuous = points;
+            pointsContinuous.push_back(pointsContinuous[0]);
+            const auto edges = pointsContinuous
                                | std::views::pairwise
                                | std::views::transform([](const auto& pair) {
                                    return std::pair(std::get<0>(pair), std::get<1>(pair));
                                }) | std::ranges::to<std::vector>();
 
             // fill edges
-            std::set<Point> colored{};
-            for (const auto& line : points | std::views::pairwise) {
-                const auto& a = std::get<0>(line);
-                const auto& b = std::get<1>(line);
-                const Point dir{signum(b.x - a.x), signum(b.y - a.y)};
-                Point current = a;
-                while (current != b) {
-                    Point copy = current;
-                    colored.insert(copy);
-                    current = current + dir;
-                }
+            std::set<Point> edgePoints{};
+            for (const auto& [a,b] : edges) {
+                const Point dir = (b - a).signum();
+                for (Point p = a; p != b; p = p + dir) { edgePoints.insert(p); }
             }
 
             // find normals
-            const std::map<int, Point> angleToDir = {
-                {0, {0, -1}},
-                {90, {1, 0}},
-                {180, {0, 1}},
-                {270, {-1, 0}},
-            };
-            std::vector<int> normals{};
-            auto totalRotation = -getAngle(lines[0]);
-            auto prevRotation = 0;
-            for (const auto& line : lines) {
-                const auto rotation = getAngle(line);
-                normals.push_back(rotation);
-                totalRotation += rotation - prevRotation;
-                prevRotation = rotation;
-            }
-            const auto normalDiff = signum(totalRotation) * -90;
-            for (auto& rotation : normals) { rotation = (rotation + normalDiff + 360) % 360; }
-            std::cout << "Total rotation: " << totalRotation << std::endl;
+            const auto normals = findNormals(edges);
 
+            // find the largest area
             auto maxArea = -1ll;
             for (int a = 0; a < points.size(); a++) {
-                context().progress(a,points.size());
+                context().progress(a, points.size());
                 for (int b = a + 1; b < points.size(); b++) {
                     const auto& rectA = points[a];
                     const auto& rectB = points[b];
                     const auto area = rectArea(rectA, rectB);
                     if (area <= maxArea) { continue; }
-
-                    if (rectA == Point{11, 1} && rectB == Point{7, 3}) {
-                        std::cout << "debug" << std::endl;
-                    }
-
-                    bool isOutside = false;
-                    for (int li = 0; li < lines.size(); li++) {
-                        const auto& [lineA, lineB] = lines[li];
-                        const auto& normal = normals[li];
-                        const auto& normalDir = angleToDir.at((normal + 360) % 360);
-
-                        if (isIntersecting(lineA, lineB, rectA, rectB)
-                            //&&                            isIntersecting(lineA + normalDir, lineB + normalDir, rectA, rectB)
-                        ) {
-                            bool isNormalOutside = false;
-                            const auto nLineA = lineA + normalDir;
-                            const auto nLineB = lineB + normalDir;
-                            const Point lineDir = Point{signum(nLineB.x - nLineA.x), signum(nLineB.y - nLineA.y)};
-                            for (Point current = nLineA; current != nLineB; current = current + lineDir) {
-                                if (contains(rectA, rectB, current) && !colored.contains(current)) {
-                                    isNormalOutside = true;
-                                    break;
-                                }
-                            }
-                            if (isNormalOutside) {
-                                isOutside = true;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!isOutside) { maxArea = area; }
+                    if (!isRectOutside(rectA, rectB, edges, edgePoints, normals)) { maxArea = area; }
                 }
             }
 
             return maxArea;
-            // 1509986250 too low
-            // 1513792010 -- right!!!
-            // 182366626
-
         }
 
     private:
         struct Point {
             int x{};
             int y{};
+
+            [[nodiscard]] Point signum() const { return {util::signum(x), util::signum(y)}; }
 
             Point operator+(Point const& other) const {
                 return Point{x + other.x, y + other.y};
@@ -169,6 +112,61 @@ namespace aoc::year2025 {
             return -1;
         }
 
+        static std::vector<Point> findNormals(std::vector<std::pair<Point, Point>> lines) {
+            auto norm360 = [](const int a) -> int { return (a % 360 + 360) % 360; };
+            auto signedDelta = [&](const int from, const int to) -> int {
+                int d = norm360(to - from);
+                if (d > 180) d -= 360;
+                return d;
+            };
+            const auto rotations = lines
+                                   | std::views::transform([](const auto line) { return getAngle(line); })
+                                   | std::ranges::to<std::vector>();
+            int totalRotation = 0;
+            for (size_t i = 1; i < rotations.size(); ++i) totalRotation += signedDelta(rotations[i - 1], rotations[i]);
+            if (!rotations.empty()) totalRotation += signedDelta(rotations.back(), rotations.front());
+            const auto normalDiff = totalRotation > 0 ? -90 : 90;
+
+            const std::map<int, Point> angleToDir = {
+                {0, {0, -1}},
+                {90, {1, 0}},
+                {180, {0, 1}},
+                {270, {-1, 0}},
+            };
+
+            return rotations | std::views::transform([normalDiff,angleToDir,norm360](const auto rotation) {
+                return angleToDir.at(norm360(rotation + normalDiff));
+            }) | std::ranges::to<std::vector>();
+        }
+
+        static bool isRectOutside(const Point& rectA, const Point& rectB,
+                                  const std::vector<std::pair<Point, Point>>& lines,
+                                  const std::set<Point>& edge,
+                                  const std::vector<Point>& normals) {
+            bool isOutside = false;
+            for (int li = 0; li < lines.size(); li++) {
+                const auto& [lineA, lineB] = lines[li];
+                const Point& normalDir = normals[li];
+
+                if (isIntersecting(lineA, lineB, rectA, rectB)) {
+                    // Check points on a line just outside the current line, but only within the rectangle.
+                    // If any of them are not on the colored edges, they have to be outside.
+                    const Point nLineA = lineA + normalDir;
+                    const Point nLineB = lineB + normalDir;
+                    const Point lineDir = (nLineB - nLineA).signum();
+                    for (Point p = nLineA; p != nLineB; p = p + lineDir) {
+                        if (contains(rectA, rectB, p) && !edge.contains(p)) {
+                            isOutside = true;
+                            break;
+                        }
+                    }
+                    if (isOutside) { break; }
+                }
+            }
+
+            return isOutside;
+        }
+
         static bool contains(const Point& rectA, const Point& rectB, const Point& p) {
             const auto ax = std::min(rectA.x, rectB.x);
             const auto bx = std::max(rectA.x, rectB.x);
@@ -192,7 +190,6 @@ namespace aoc::year2025 {
             bool result = false;
             if (lay == lby && lay >= ray && lay <= rby) {
                 // horizontal
-                // result = (lax <= rax && lbx >= rax) || (lax <= rbx && lbx >= rbx);
                 result = (lax <= rax && lbx >= rax) || (lax <= rbx && lbx >= rbx) || (lax >= rax && lbx <= rbx);
             }
             else if (lax == lbx && lax >= rax && lax <= rbx) {
