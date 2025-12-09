@@ -26,6 +26,6 @@ TEST_CASE ("Day09 for puzzle input", "[puzzle]") {
     Day09 day{};
     const std::string input = loadPuzzleInput(day);
     testPart1(day, input, 4'738'108'384);
-    // testPart2(day, input, "not_implemented");
+    testPart2(day, input, 1'513'792'010);
 }
 

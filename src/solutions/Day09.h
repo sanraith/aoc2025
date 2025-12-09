@@ -9,6 +9,7 @@
 #include <vector>
 #include <numeric>
 #include <functional>
+#include <queue>
 using namespace aoc::util;
 
 namespace aoc::year2025 {
@@ -33,36 +34,94 @@ namespace aoc::year2025 {
             pointsInput.push_back(pointsInput[0]);
             const auto points = pointsInput;
 
+            const auto lines = points
+                               | std::views::pairwise
+                               | std::views::transform([](const auto& pair) {
+                                   return std::pair(std::get<0>(pair), std::get<1>(pair));
+                               }) | std::ranges::to<std::vector>();
+
+            // fill edges
+            std::set<Point> colored{};
+            for (const auto& line : points | std::views::pairwise) {
+                const auto& a = std::get<0>(line);
+                const auto& b = std::get<1>(line);
+                const Point dir{signum(b.x - a.x), signum(b.y - a.y)};
+                Point current = a;
+                while (current != b) {
+                    Point copy = current;
+                    colored.insert(copy);
+                    current = current + dir;
+                }
+            }
+
+            // find normals
+            const std::map<int, Point> angleToDir = {
+                {0, {0, -1}},
+                {90, {1, 0}},
+                {180, {0, 1}},
+                {270, {-1, 0}},
+            };
+            std::vector<int> normals{};
+            auto totalRotation = -getAngle(lines[0]);
+            auto prevRotation = 0;
+            for (const auto& line : lines) {
+                const auto rotation = getAngle(line);
+                normals.push_back(rotation);
+                totalRotation += rotation - prevRotation;
+                prevRotation = rotation;
+            }
+            const auto normalDiff = signum(totalRotation) * -90;
+            for (auto& rotation : normals) { rotation = (rotation + normalDiff + 360) % 360; }
+            std::cout << "Total rotation: " << totalRotation << std::endl;
+
             auto maxArea = -1ll;
             for (int a = 0; a < points.size(); a++) {
+                context().progress(a,points.size());
                 for (int b = a + 1; b < points.size(); b++) {
                     const auto& rectA = points[a];
                     const auto& rectB = points[b];
+                    const auto area = rectArea(rectA, rectB);
+                    if (area <= maxArea) { continue; }
 
-                    // std::cout << rectA << " - " << rectB << std::endl;
-                    //
-                    // if (rectA == Point{11, 1} && rectB == Point{7, 3}) {
-                    //     std::cout << "";
-                    // }
-
-                    // ToDo wrong solution, need to find rectangle of red+green, not rect without additional reds
-                    const auto linePairView = points | std::views::pairwise;
-                    const bool hasIntersecting =
-                        std::ranges::any_of(linePairView, [rectA, rectB](const auto& line) {
-                            const auto& lineA = std::get<0>(line);
-                            const auto& lineB = std::get<1>(line);
-                            if (lineA == rectA || lineA == rectB || lineB == rectA || lineB == rectB) { return false; }
-                            return isIntersecting(lineA, lineB, rectA, rectB);
-                        });
-
-                    if (!hasIntersecting) {
-                        maxArea = std::max(maxArea, rectArea(rectA, rectB));
+                    if (rectA == Point{11, 1} && rectB == Point{7, 3}) {
+                        std::cout << "debug" << std::endl;
                     }
+
+                    bool isOutside = false;
+                    for (int li = 0; li < lines.size(); li++) {
+                        const auto& [lineA, lineB] = lines[li];
+                        const auto& normal = normals[li];
+                        const auto& normalDir = angleToDir.at((normal + 360) % 360);
+
+                        if (isIntersecting(lineA, lineB, rectA, rectB)
+                            //&&                            isIntersecting(lineA + normalDir, lineB + normalDir, rectA, rectB)
+                        ) {
+                            bool isNormalOutside = false;
+                            const auto nLineA = lineA + normalDir;
+                            const auto nLineB = lineB + normalDir;
+                            const Point lineDir = Point{signum(nLineB.x - nLineA.x), signum(nLineB.y - nLineA.y)};
+                            for (Point current = nLineA; current != nLineB; current = current + lineDir) {
+                                if (contains(rectA, rectB, current) && !colored.contains(current)) {
+                                    isNormalOutside = true;
+                                    break;
+                                }
+                            }
+                            if (isNormalOutside) {
+                                isOutside = true;
+                                break;
+                            }
+                        }
+                    }
+
+                    if (!isOutside) { maxArea = area; }
                 }
             }
 
             return maxArea;
             // 1509986250 too low
+            // 1513792010 -- right!!!
+            // 182366626
+
         }
 
     private:
@@ -72,6 +131,10 @@ namespace aoc::year2025 {
 
             Point operator+(Point const& other) const {
                 return Point{x + other.x, y + other.y};
+            }
+
+            Point operator-(Point const& other) const {
+                return Point{x - other.x, y - other.y};
             }
 
             bool operator<(Point const& other) const {
@@ -87,6 +150,32 @@ namespace aoc::year2025 {
                 return os << "(" << p.x << "," << p.y << ")";
             }
         };
+
+
+        static int getAngle(std::pair<Point, Point> pair) {
+            const auto& [p1, p2] = pair;
+            if (p1.x == p2.x) {
+                // vertical
+                if (p1.y > p2.y) { return 0; }
+                if (p1.y < p2.y) { return 180; }
+                std::cout << "error" << std::endl;
+            }
+            else if (p1.y == p2.y) {
+                // horizontal
+                if (p1.x > p2.x) { return 270; }
+                if (p1.x < p2.x) { return 90; }
+                std::cout << "error" << std::endl;
+            }
+            return -1;
+        }
+
+        static bool contains(const Point& rectA, const Point& rectB, const Point& p) {
+            const auto ax = std::min(rectA.x, rectB.x);
+            const auto bx = std::max(rectA.x, rectB.x);
+            const auto ay = std::min(rectA.y, rectB.y);
+            const auto by = std::max(rectA.y, rectB.y);
+            return p.x >= ax && p.x <= bx && p.y >= ay && p.y <= by;
+        }
 
         static bool isIntersecting(const Point& lineAIn, const Point& lineBIn, const Point& rectAIn,
                                    const Point& rectBIn) {
@@ -114,7 +203,7 @@ namespace aoc::year2025 {
         }
 
         static int64_t rectArea(const Point& a, const Point& b) {
-            return static_cast<int64_t>(abs(a.x - b.x) + 1) * abs(a.y - b.y + 1);
+            return static_cast<int64_t>(abs(a.x - b.x) + 1) * static_cast<int64_t>(abs(a.y - b.y) + 1);
         }
 
         static std::vector<Point> parse(const std::string_view input) {
