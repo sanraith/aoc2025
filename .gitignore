@@ -1,6 +1,9 @@
 # Advent of Code files
 aoc*.config.json
 
+# Temp xls file
+~*.xlsx
+
 # Build directories
 cmake-build-*/
 vcpkg_installed/

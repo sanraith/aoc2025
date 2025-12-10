@@ -151,14 +151,16 @@ namespace aoc::year2025 {
                     // If any of them are not on the colored edges, they have to be outside.
                     const Point nLineA = lineA + normalDir;
                     const Point nLineB = lineB + normalDir;
-                    const Point lineDir = (nLineB - nLineA).signum();
-                    for (Point p = nLineA; p != nLineB; p = p + lineDir) {
-                        if (contains(rectA, rectB, p) && !edge.contains(p)) {
-                            isOutside = true;
-                            break;
+                    if (isIntersecting(nLineA, nLineB, rectA, rectB)) {
+                        const Point lineDir = (nLineB - nLineA).signum();
+                        for (Point p = nLineA; p != nLineB; p = p + lineDir) {
+                            if (contains(rectA, rectB, p) && !edge.contains(p)) {
+                                isOutside = true;
+                                break;
+                            }
                         }
+                        if (isOutside) { break; }
                     }
-                    if (isOutside) { break; }
                 }
             }
 

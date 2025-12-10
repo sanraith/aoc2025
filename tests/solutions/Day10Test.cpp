@@ -30,9 +30,20 @@ TEST_CASE("Day10 for example input 3", "[example]") {
     testPart2(day, exampleInput3, 11);
 }
 
+TEST_CASE("Day10 for example input combined", "[example]") {
+    const auto exampleInput3 = R"([.##.] (3) (1,3) (2) (2,3) (0,2) (0,1) {3,5,4,7}
+[...#.] (0,2,3,4) (2,3) (0,4) (0,1,2) (1,2,3,4) {7,5,12,7,2}
+[.###.#] (0,1,2,3,4) (0,3,4) (0,1,2,4,5) (1,2) {10,11,11,5,10,5}
+)";
+
+    Day10 day{};
+    testPart1(day, exampleInput3, 7);
+    testPart2(day, exampleInput3, 33);
+}
+
 TEST_CASE("Day10 for puzzle input", "[puzzle]") {
     Day10 day{};
     const std::string input = loadPuzzleInput(day);
     testPart1(day, input, 473);
-    // testPart2(day, input, "not_implemented");
+    // testPart2(day, input, 18681); // Too slow ATM
 }
