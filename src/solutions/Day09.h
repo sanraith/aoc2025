@@ -7,8 +7,6 @@
 #include <string>
 #include <ranges>
 #include <vector>
-#include <numeric>
-#include <queue>
 using namespace aoc::util;
 
 namespace aoc::year2025 {
