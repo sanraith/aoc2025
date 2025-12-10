@@ -10,8 +10,8 @@
 #include <vector>
 #include <queue>
 #include <execution>
-#include <iostream>
 #include <mutex>
+#include <fmt/format.h>
 using namespace aoc::util;
 
 namespace aoc::year2025 {
@@ -31,24 +31,18 @@ namespace aoc::year2025 {
 
         Result part2(const std::string_view input) override {
             const auto machines = parse(input);
-            // auto sum = 0ll;
-            // // for (const auto& machine : machines) {
-            // for (int i = 0; i < machines.size(); i++) {
-            //     std::cout << i + 1 << "  / " << machines.size() << std::endl;
-            //     context().progress(i, machines.size());
-            //     const auto& machine = machines[i];
-            //     sum += fewestPresses(machine.joltages, machine.buttonVectors);
-            // }
 
-            std::mutex m{};
             auto sum = 0ll;
             auto completeCount = 0;
             const auto completeMax = machines.size();
+            std::mutex machinesMutex{};
             std::for_each(std::execution::par, machines.begin(), machines.end(), [&](const auto& machine) {
                 const auto presses = fewestPresses(machine.joltages, machine.buttonVectors);
-                std::lock_guard lock(m);
+                std::lock_guard lock(machinesMutex);
+                completeCount++;
                 sum += presses;
-                context().progress(completeCount++, completeMax);
+                context().statusMsg(fmt::format("({}/{})", completeCount, completeMax));
+                context().progress(completeCount, completeMax);
             });
 
             return sum;
@@ -209,10 +203,6 @@ namespace aoc::year2025 {
                     // std::cout << buttonIndex << ": " << i << "; j: ";
                     // for (const auto j : remainingJoltage) {
                     //     std::cout << j << ", ";
-                    // }
-                    // std::cout << std::endl;
-                    // if (remainingJoltage == std::vector{5, 5, 5, 0, 0} && buttonIndex == 1 && i == 5) {
-                    //     std::cout << "\n";
                     // }
 
                     if (remainingJoltage == zeroJoltage) {

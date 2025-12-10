@@ -49,10 +49,16 @@ namespace aoc::util {
 
     static Result runPart(const std::unique_ptr<Solution>& solution, std::string_view input, const int part) {
         std::atomic<float> asyncProgress{-1};
+        std::mutex asyncMessageMutex{};
+        std::string asyncMessage{""};
         const ProgressCallback progressCallback = [&asyncProgress](const float update) {
             asyncProgress.store(update, std::memory_order_relaxed);
         };
-        Context context{progressCallback};
+        const StatusCallback statusCallback = [&](std::string msg) {
+            std::lock_guard lock(asyncMessageMutex);
+            asyncMessage = std::move(msg);
+        };
+        Context context{progressCallback, statusCallback};
         solution->setContext(context);
         const auto partMember = part == 1 ? &Solution::part1 : &Solution::part2;
 
@@ -84,7 +90,11 @@ namespace aoc::util {
                                          ? ""
                                          : std::format("{:5.2f}%", asyncProgress * 100.0f);
 
-            line.print(fmt::format("Part {}... {} {}", part, elapsedStr, progressStr));
+            {
+                std::lock_guard lock(asyncMessageMutex);
+                const auto printedMessage = asyncMessage.empty() ? "" : " " + asyncMessage;
+                line.print(fmt::format("Part {}... {} {}{}", part, elapsedStr, progressStr, printedMessage));
+            }
             std::this_thread::sleep_for(
                 std::chrono::milliseconds(SolutionRunner::PROGRESS_UPDATE_DELAY_MS));
         }
