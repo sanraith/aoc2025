@@ -32,6 +32,7 @@ add_library(aoc2025lib
         src/solutions/Day08.h
         src/solutions/Day09.h
         src/solutions/Day10.h
+        src/solutions/Day11.h
         src/util/CachedAocDataLoader.cpp
         src/util/CachedAocDataLoader.h
         src/util/AocConfig.cpp
@@ -78,6 +79,8 @@ if (MSVC)
 
     # Treat warnings as errors
     add_compile_options(/WX)
+
+    add_compile_options(/utf-8)
 else ()
     # Treat warnings as errors
     add_compile_options(-Werror)

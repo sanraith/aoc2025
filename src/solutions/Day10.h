@@ -11,7 +11,6 @@
 #include <queue>
 #include <execution>
 #include <mutex>
-#include <fmt/format.h>
 using namespace aoc::util;
 
 namespace aoc::year2025 {
@@ -41,7 +40,7 @@ namespace aoc::year2025 {
                 std::lock_guard lock(machinesMutex);
                 completeCount++;
                 sum += presses;
-                context().statusMsg(fmt::format("({}/{})", completeCount, completeMax));
+                context().statusMsg(std::format("({}/{})", completeCount, completeMax));
                 context().progress(completeCount, completeMax);
             });
 
