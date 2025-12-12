@@ -12,6 +12,7 @@ add_executable(tests
         solutions/Day09Test.cpp
         solutions/Day10Test.cpp
         solutions/Day11Test.cpp
+        solutions/Day12Test.cpp
 )
 find_package(Catch2 CONFIG REQUIRED)
 target_link_libraries(tests PRIVATE Catch2::Catch2WithMain aoc2025lib)
