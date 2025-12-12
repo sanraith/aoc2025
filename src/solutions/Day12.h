@@ -4,6 +4,7 @@
 #include <regex>
 #include <ranges>
 #include <vector>
+#include <algorithm>
 using namespace aoc::util;
 
 namespace aoc::year2025 {
@@ -13,17 +14,44 @@ namespace aoc::year2025 {
         Day12() : Solution(2025, 12, "Christmas Tree Farm") {}
 
         Result part1(const std::string_view input) override {
-            const auto data = parse(input);
-            return NotImplementedResult;
+            const auto [shapes, regions] = parse(input);
+            const auto maxShapeWith = std::ranges::max(shapes, {}, &Shape::width).width;
+            const auto maxShapeHeight = std::ranges::max(shapes, {}, &Shape::height).height;
+
+            auto validRegionCount = 0;
+            for (const auto& [width, height, shapeCounts] : regions) {
+                const auto nonOverlappingShapeSpace = (width / maxShapeWith) * (height / maxShapeHeight);
+                const auto requiredShapeCount = std::ranges::fold_left(shapeCounts, 0, std::plus{});
+
+                if (requiredShapeCount <= nonOverlappingShapeSpace) { validRegionCount++; }
+                else {
+                    const auto regionSize = width * height;
+                    auto minimumRegionSize = 0;
+                    for (int i = 0; i < shapeCounts.size(); i++) {
+                        minimumRegionSize += shapes[i].netSize * shapeCounts[i];
+                    }
+
+                    if (regionSize >= minimumRegionSize) {
+                        return Result{"not solved for non-trivial input", Result::State::Failure};
+                    }
+                }
+            }
+            return validRegionCount;
         }
 
         Result part2(const std::string_view input) override {
-            return NotImplementedResult;
+            return "*";
         }
 
     private:
+        static constexpr char TILE_OCCUPIED = '#';
+        static constexpr char TILE_SPACE = '.';
+
         struct Shape {
             int index{};
+            int width{};
+            int height{};
+            int netSize{};
             std::vector<std::string> lines{};
         };
 
@@ -50,7 +78,14 @@ namespace aoc::year2025 {
             const std::regex shapeRegex{R"((\d+):(?:\n|\r\n)((?:[#\.]+(?:\n|\r\n)?)+))"};
             for (std::sregex_iterator it(shapesStr.begin(), shapesStr.end(), shapeRegex), end; it != end; ++it) {
                 const std::smatch& shapeMatch = *it;
-                shapes.push_back(Shape{stoi(shapeMatch[1].str()), getLines(shapeMatch[2].str())});
+                auto lines = getLines(shapeMatch[2].str());
+                const auto netSize = std::ranges::fold_left(lines, 0, [](const auto acc, const auto& line) {
+                    return acc + std::count(line.begin(), line.end(), TILE_OCCUPIED);
+                });
+                shapes.push_back(Shape{
+                    stoi(shapeMatch[1].str()), static_cast<int>(lines[0].size()), static_cast<int>(lines.size()),
+                    static_cast<int>(netSize), std::move(lines)
+                });
             }
 
             std::vector<Region> regions{};

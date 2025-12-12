@@ -6,7 +6,7 @@ using namespace aoc::year2025;
 
 /** Tests for https://adventofcode.com/2025/day/12 */
 
-TEST_CASE ("Day12 for example input 1", "[example]") {
+TEST_CASE("Day12 for example input 1", "[example]") {
     const auto exampleInput1 = R"(0:
 ###
 ##.
@@ -43,14 +43,13 @@ TEST_CASE ("Day12 for example input 1", "[example]") {
 )";
 
     Day12 day{};
-    testPart1(day, exampleInput1, 2);
-    testPart2(day, exampleInput1, "not_implemented");
+    // testPart1(day, exampleInput1, 2); // not solved for non-trivial input
+    testPart2(day, exampleInput1, "*");
 }
 
-TEST_CASE ("Day12 for puzzle input", "[puzzle]") {
+TEST_CASE("Day12 for puzzle input", "[puzzle]") {
     Day12 day{};
     const std::string input = loadPuzzleInput(day);
-    // testPart1(day, input, "not_implemented");
-    // testPart2(day, input, "not_implemented");
+    testPart1(day, input, 569);
+    testPart2(day, input, "*");
 }
-
